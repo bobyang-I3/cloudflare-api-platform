@@ -10,13 +10,19 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string>('');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // Check browser support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError('Your browser does not support audio recording. Please use a modern browser like Chrome, Firefox, or Edge.');
+    }
+    
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) window.clearInterval(timerRef.current);
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         mediaRecorderRef.current.stop();
       }
@@ -56,7 +62,7 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
       setRecordingTime(0);
 
       // Start timer
-      timerRef.current = setInterval(() => {
+      timerRef.current = window.setInterval(() => {
         setRecordingTime(prev => prev + 1);
       }, 1000);
     } catch (error) {
@@ -70,7 +76,7 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       if (timerRef.current) {
-        clearInterval(timerRef.current);
+        window.clearInterval(timerRef.current);
         timerRef.current = null;
       }
     }
@@ -148,6 +154,19 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
           </button>
         )}
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.9)',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          fontSize: '14px'
+        }}>
+          ⚠️ {error}
+        </div>
+      )}
 
       {/* Recording Controls */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
