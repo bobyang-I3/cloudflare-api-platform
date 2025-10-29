@@ -15,12 +15,11 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
 
+  // Check if recording is supported (requires HTTPS or localhost)
+  const isRecordingSupported = navigator.mediaDevices && navigator.mediaDevices.getUserMedia && 
+    (window.location.protocol === 'https:' || window.location.hostname === 'localhost');
+
   useEffect(() => {
-    // Check browser support
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setError('Your browser does not support audio recording. Please use a modern browser like Chrome, Firefox, or Edge.');
-    }
-    
     return () => {
       if (timerRef.current) window.clearInterval(timerRef.current);
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
@@ -168,11 +167,27 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
         </div>
       )}
 
+      {/* HTTPS Warning */}
+      {!isRecordingSupported && (
+        <div style={{
+          background: 'rgba(251, 191, 36, 0.2)',
+          border: '1px solid rgba(251, 191, 36, 0.5)',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          fontSize: '13px',
+          lineHeight: '1.5'
+        }}>
+          ℹ️ <strong>Recording disabled:</strong> Microphone access requires HTTPS. Please upload an audio file instead.
+        </div>
+      )}
+
       {/* Recording Controls */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {/* Record Button */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-          {isRecording ? (
+        {/* Record Button - Only show if supported */}
+        {isRecordingSupported && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            {isRecording ? (
             <>
               <div style={{
                 fontSize: '32px',
@@ -257,14 +272,17 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
               Start Recording
             </button>
           )}
-        </div>
+          </div>
+        )}
 
-        {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '8px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }} />
-          <span style={{ fontSize: '12px', opacity: 0.8 }}>OR</span>
-          <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }} />
-        </div>
+        {/* Divider - Only show if recording is supported */}
+        {isRecordingSupported && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '8px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }} />
+            <span style={{ fontSize: '12px', opacity: 0.8 }}>OR</span>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }} />
+          </div>
+        )}
 
         {/* Upload Area */}
         <div
