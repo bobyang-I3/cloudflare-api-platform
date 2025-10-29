@@ -11,6 +11,17 @@ export default function AdminCreditPanel() {
   const [operation, setOperation] = useState<'deposit' | 'deduct'>('deposit');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // Mobile responsive
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -109,35 +120,36 @@ export default function AdminCreditPanel() {
   const selectedUserCredit = selectedUser ? userCredits.get(selectedUser) : null;
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div style={{ padding: isMobile ? '12px' : '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' }}>
+      <div style={{ marginBottom: isMobile ? '16px' : '32px' }}>
+        <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' }}>
           💰 Credit Management
         </h2>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>
+        <p style={{ color: '#6b7280', fontSize: isMobile ? '12px' : '14px' }}>
           Manage user credit balances
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 400px', gap: isMobile ? '16px' : '24px' }}>
         {/* User List */}
         <div style={{
           background: 'white',
-          borderRadius: '12px',
-          padding: '24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          borderRadius: isMobile ? '8px' : '12px',
+          padding: isMobile ? '12px' : '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          overflowX: 'auto'
         }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>User Credits</h3>
+          <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: isMobile ? '12px' : '16px' }}>User Credits</h3>
           
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '600px' : 'auto' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#374151' }}>User</th>
-                <th style={{ padding: '12px', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Balance</th>
-                <th style={{ padding: '12px', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Deposited</th>
-                <th style={{ padding: '12px', textAlign: 'right', fontWeight: '600', color: '#374151' }}>Consumed</th>
-                <th style={{ padding: '12px', textAlign: 'center', fontWeight: '600', color: '#374151' }}>Action</th>
+                <th style={{ padding: isMobile ? '8px' : '12px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: isMobile ? '11px' : '14px' }}>User</th>
+                <th style={{ padding: isMobile ? '8px' : '12px', textAlign: 'right', fontWeight: '600', color: '#374151', fontSize: isMobile ? '11px' : '14px' }}>Balance</th>
+                <th style={{ padding: isMobile ? '8px' : '12px', textAlign: 'right', fontWeight: '600', color: '#374151', fontSize: isMobile ? '11px' : '14px' }}>Deposited</th>
+                <th style={{ padding: isMobile ? '8px' : '12px', textAlign: 'right', fontWeight: '600', color: '#374151', fontSize: isMobile ? '11px' : '14px' }}>Consumed</th>
+                <th style={{ padding: isMobile ? '8px' : '12px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: isMobile ? '11px' : '14px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -151,29 +163,29 @@ export default function AdminCreditPanel() {
                       background: selectedUser === userInfo.user.id ? '#f0f9ff' : 'transparent'
                     }}
                   >
-                    <td style={{ padding: '12px' }}>
-                      <div style={{ fontWeight: '500', color: '#1f2937' }}>{userInfo.user.username}</div>
-                      <div style={{ fontSize: '12px', color: '#6b7280' }}>{userInfo.user.email}</div>
+                    <td style={{ padding: isMobile ? '8px' : '12px' }}>
+                      <div style={{ fontWeight: '500', color: '#1f2937', fontSize: isMobile ? '12px' : '14px' }}>{userInfo.user.username}</div>
+                      <div style={{ fontSize: isMobile ? '10px' : '12px', color: '#6b7280' }}>{userInfo.user.email}</div>
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'right', fontFamily: 'monospace', fontWeight: '600' }}>
+                    <td style={{ padding: isMobile ? '8px' : '12px', textAlign: 'right', fontFamily: 'monospace', fontWeight: '600', fontSize: isMobile ? '11px' : '14px' }}>
                       {credit?.balance.toFixed(2) || '0.00'}
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'right', fontFamily: 'monospace', color: '#059669' }}>
+                    <td style={{ padding: isMobile ? '8px' : '12px', textAlign: 'right', fontFamily: 'monospace', color: '#059669', fontSize: isMobile ? '11px' : '14px' }}>
                       {credit?.total_deposited.toFixed(2) || '0.00'}
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'right', fontFamily: 'monospace', color: '#dc2626' }}>
+                    <td style={{ padding: isMobile ? '8px' : '12px', textAlign: 'right', fontFamily: 'monospace', color: '#dc2626', fontSize: isMobile ? '11px' : '14px' }}>
                       {credit?.total_consumed.toFixed(4) || '0.0000'}
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'center' }}>
+                    <td style={{ padding: isMobile ? '8px' : '12px', textAlign: 'center' }}>
                       <button
                         onClick={() => setSelectedUser(userInfo.user.id)}
                         style={{
-                          padding: '6px 12px',
+                          padding: isMobile ? '4px 8px' : '6px 12px',
                           background: selectedUser === userInfo.user.id ? '#3b82f6' : '#e5e7eb',
                           color: selectedUser === userInfo.user.id ? 'white' : '#374151',
                           border: 'none',
                           borderRadius: '6px',
-                          fontSize: '12px',
+                          fontSize: isMobile ? '10px' : '12px',
                           fontWeight: '500',
                           cursor: 'pointer'
                         }}
@@ -191,14 +203,14 @@ export default function AdminCreditPanel() {
         {/* Operation Panel */}
         <div style={{
           background: 'white',
-          borderRadius: '12px',
-          padding: '24px',
+          borderRadius: isMobile ? '8px' : '12px',
+          padding: isMobile ? '16px' : '24px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           height: 'fit-content',
-          position: 'sticky',
-          top: '24px'
+          position: isMobile ? 'relative' : 'sticky',
+          top: isMobile ? '0' : '24px'
         }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: isMobile ? '12px' : '16px' }}>
             {operation === 'deposit' ? '➕ Deposit' : '➖ Deduct'} Credits
           </h3>
 

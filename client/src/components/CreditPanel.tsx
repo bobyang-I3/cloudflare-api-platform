@@ -217,45 +217,50 @@ export default function CreditPanel({ token }: CreditPanelProps) {
         </div>
 
         {/* Content Panel */}
-        <div style={{ background: 'white', borderRadius: '24px', padding: '32px', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
+        <div style={{ 
+          background: 'white', 
+          borderRadius: isMobile ? '16px' : '24px', 
+          padding: isMobile ? '16px' : '32px', 
+          boxShadow: '0 8px 32px rgba(0,0,0,0.08)' 
+        }}>
           {activeTab === 'overview' && (
             <div>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '24px' }}>Account Overview</h2>
+              <h2 style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 'bold', marginBottom: isMobile ? '16px' : '24px' }}>Account Overview</h2>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '32px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? '12px' : '24px', marginBottom: isMobile ? '16px' : '32px' }}>
                 <div style={{
                   background: 'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)',
-                  borderRadius: '16px',
-                  padding: '24px'
+                  borderRadius: isMobile ? '12px' : '16px',
+                  padding: isMobile ? '16px' : '24px'
                 }}>
-                  <div style={{ fontSize: '14px', color: '#065f46', marginBottom: '8px' }}>💰 Income</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#065f46' }}>
+                  <div style={{ fontSize: isMobile ? '12px' : '14px', color: '#065f46', marginBottom: '8px' }}>💰 Income</div>
+                  <div style={{ fontSize: isMobile ? '24px' : '36px', fontWeight: 'bold', color: '#065f46' }}>
                     +{totalIncome.toFixed(2)}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#047857' }}>credits received</div>
+                  <div style={{ fontSize: isMobile ? '11px' : '12px', color: '#047857' }}>credits received</div>
                 </div>
                 
                 <div style={{
                   background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                  borderRadius: '16px',
-                  padding: '24px'
+                  borderRadius: isMobile ? '12px' : '16px',
+                  padding: isMobile ? '16px' : '24px'
                 }}>
-                  <div style={{ fontSize: '14px', color: '#7f1d1d', marginBottom: '8px' }}>💳 Expenses</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#991b1b' }}>
+                  <div style={{ fontSize: isMobile ? '12px' : '14px', color: '#7f1d1d', marginBottom: '8px' }}>💳 Expenses</div>
+                  <div style={{ fontSize: isMobile ? '24px' : '36px', fontWeight: 'bold', color: '#991b1b', wordBreak: 'break-word' }}>
                     -{totalExpense.toFixed(4)}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#b91c1c' }}>credits spent</div>
+                  <div style={{ fontSize: isMobile ? '11px' : '12px', color: '#b91c1c' }}>credits spent</div>
                 </div>
               </div>
               
               <div style={{
                 background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
-                borderRadius: '16px',
-                padding: '24px',
+                borderRadius: isMobile ? '12px' : '16px',
+                padding: isMobile ? '16px' : '24px',
                 border: '1px solid #bae6fd'
               }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>💡 Quick Info</h3>
-                <ul style={{ fontSize: '14px', color: '#1e40af', lineHeight: '1.8', listStyle: 'none', padding: 0 }}>
+                <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: isMobile ? '12px' : '16px' }}>💡 Quick Info</h3>
+                <ul style={{ fontSize: isMobile ? '12px' : '14px', color: '#1e40af', lineHeight: '1.8', listStyle: 'none', padding: 0 }}>
                   <li style={{ marginBottom: '8px' }}>• 1 Credit = $0.01 USD</li>
                   <li style={{ marginBottom: '8px' }}>• Credits are used for AI model requests</li>
                   <li style={{ marginBottom: '8px' }}>• You can transfer credits to other users</li>
