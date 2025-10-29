@@ -25,7 +25,14 @@ def get_my_balance(
 ):
     """Get current user's credit balance"""
     user_credit = CreditService.get_or_create_user_credit(current_user.id, db)
-    return user_credit
+    
+    # Return explicit dict to avoid relationship serialization issues
+    return {
+        "user_id": user_credit.user_id,
+        "balance": user_credit.balance,
+        "total_deposited": user_credit.total_deposited,
+        "total_consumed": user_credit.total_consumed
+    }
 
 
 @router.get("/balance/{user_id}", response_model=CreditBalanceResponse)
@@ -39,7 +46,14 @@ def get_user_balance(
         raise HTTPException(status_code=403, detail="Admin access required")
     
     user_credit = CreditService.get_or_create_user_credit(user_id, db)
-    return user_credit
+    
+    # Return explicit dict to avoid relationship serialization issues
+    return {
+        "user_id": user_credit.user_id,
+        "balance": user_credit.balance,
+        "total_deposited": user_credit.total_deposited,
+        "total_consumed": user_credit.total_consumed
+    }
 
 
 @router.post("/deposit", response_model=CreditTransactionResponse)
