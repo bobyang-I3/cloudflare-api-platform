@@ -139,10 +139,21 @@ async def call_cloudflare_ai(
         except httpx.RequestError as e:
             raise Exception(f"Network error: {str(e)}")
         
-        # Extract response text
-        response_text = data.get("result", {}).get("response", "")
+        # Debug: Log the actual response structure
+        print(f"[DEBUG] GPT OSS API Response: {data}")
+        
+        # Extract response text - try multiple possible field names
+        response_text = (
+            data.get("result", {}).get("response") or
+            data.get("result", {}).get("text") or
+            data.get("response") or
+            data.get("text") or
+            ""
+        )
+        
         if not response_text:
-            raise Exception("Model returned empty response.")
+            # Provide more detailed error with actual response structure
+            raise Exception(f"Model returned empty response. API response structure: {data}")
         
         output_tokens = estimate_tokens(response_text)
         total_tokens = input_tokens + output_tokens
