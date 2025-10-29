@@ -42,18 +42,31 @@ def get_user_balance(
     db: Session = Depends(get_db)
 ):
     """Get specific user's credit balance (admin only)"""
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
-    user_credit = CreditService.get_or_create_user_credit(user_id, db)
-    
-    # Return explicit dict to avoid relationship serialization issues
-    return {
-        "user_id": user_credit.user_id,
-        "balance": user_credit.balance,
-        "total_deposited": user_credit.total_deposited,
-        "total_consumed": user_credit.total_consumed
-    }
+    try:
+        print(f"[Credit] get_user_balance called for user_id={user_id} by {current_user.username}")
+        
+        if not current_user.is_admin:
+            print(f"[Credit] Access denied: {current_user.username} is not admin")
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        print(f"[Credit] Fetching credit for user_id={user_id}")
+        user_credit = CreditService.get_or_create_user_credit(user_id, db)
+        
+        result = {
+            "user_id": user_credit.user_id,
+            "balance": float(user_credit.balance),
+            "total_deposited": float(user_credit.total_deposited),
+            "total_consumed": float(user_credit.total_consumed)
+        }
+        print(f"[Credit] Returning balance for {user_id}: {result}")
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Credit] ERROR in get_user_balance: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to get balance: {str(e)}")
 
 
 @router.post("/deposit", response_model=CreditTransactionResponse)
