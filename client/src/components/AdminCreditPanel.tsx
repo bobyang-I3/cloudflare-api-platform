@@ -1,15 +1,6 @@
 import { useState, useEffect } from 'react';
 import { creditApi, api, CreditBalance, UserWithLimit } from '../api';
 
-interface UserCreditInfo {
-  user_id: string;
-  username: string;
-  email: string;
-  balance: number;
-  total_deposited: number;
-  total_consumed: number;
-}
-
 export default function AdminCreditPanel() {
   const [users, setUsers] = useState<UserWithLimit[]>([]);
   const [userCredits, setUserCredits] = useState<Map<string, CreditBalance>>(new Map());

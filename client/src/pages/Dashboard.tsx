@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { User, aiApi, usageApi, Model, ChatMessage, UsageStats } from '../api';
 import ChatPanel from '../components/ChatPanel';
 import UsagePanel from '../components/UsagePanel';

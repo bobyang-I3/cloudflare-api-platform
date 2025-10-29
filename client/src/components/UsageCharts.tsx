@@ -175,7 +175,20 @@ export default function UsageCharts({ token }: UsageChartsProps) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={modelData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="name" stroke="#6b7280" angle={-45} textAnchor="end" height={100} />
+              <XAxis 
+                dataKey="name" 
+                stroke="#6b7280" 
+                angle={-45} 
+                textAnchor="end" 
+                height={100}
+                interval={0}
+                tick={{ fontSize: 10 }}
+                tickFormatter={(value: string) => {
+                  // Shorten model names: take last part after slash, limit to 15 chars
+                  const shortName = value.split('/').pop() || value;
+                  return shortName.length > 15 ? shortName.substring(0, 12) + '...' : shortName;
+                }}
+              />
               <YAxis stroke="#6b7280" />
               <Tooltip
                 contentStyle={{
@@ -208,7 +221,8 @@ export default function UsageCharts({ token }: UsageChartsProps) {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={({ percent }: { percent: number }) => `${(percent * 100).toFixed(0)}%`}
+                labelLine={false}
               >
                 {modelData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -220,6 +234,16 @@ export default function UsageCharts({ token }: UsageChartsProps) {
                   border: '1px solid #e5e7eb',
                   borderRadius: '8px'
                 }}
+              />
+              <Legend 
+                layout="vertical" 
+                align="right" 
+                verticalAlign="middle"
+                formatter={(value: string) => {
+                  const shortName = value.split('/').pop() || value;
+                  return shortName.length > 20 ? shortName.substring(0, 17) + '...' : shortName;
+                }}
+                wrapperStyle={{ fontSize: '12px' }}
               />
             </PieChart>
           </ResponsiveContainer>

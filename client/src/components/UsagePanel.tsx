@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usageApi, UsageStats, UsageLog } from '../api';
 import UsageCharts from './UsageCharts';
 import { BarChart3, Table } from 'lucide-react';

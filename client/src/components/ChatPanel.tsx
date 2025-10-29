@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { aiApi, Model, ChatMessage } from '../api';
-import { Send, Loader2, Image as ImageIcon, X, User, Bot, Sparkles, Palette, BarChart3 } from 'lucide-react';
 
 interface ChatPanelProps {
   apiKey: string;
@@ -125,7 +124,7 @@ export default function ChatPanel({
           });
         },
         // onComplete: Streaming finished
-        (fullText: string) => {
+        (_fullText: string) => {
           setLoading(false);
           setUploadedImage(null);
         },
