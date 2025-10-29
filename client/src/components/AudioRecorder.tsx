@@ -12,7 +12,7 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
   const [isDragging, setIsDragging] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
