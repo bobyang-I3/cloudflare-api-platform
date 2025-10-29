@@ -27,6 +27,21 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [currentMessages, setCurrentMessages] = useState<ChatMessage[]>([]);
   const [currentModel, setCurrentModel] = useState('@cf/meta/llama-3.1-8b-instruct');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Mobile responsive state
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      // Auto-collapse sidebar on mobile
+      if (window.innerWidth < 768) {
+        setSidebarCollapsed(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // Load models
@@ -201,24 +216,32 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '20px 32px',
+          padding: isMobile ? '12px 16px' : '20px 32px',
           maxWidth: '1600px',
           margin: '0 auto'
         }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Zap size={28} color="white" strokeWidth={2.5} />
-              <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'white', marginBottom: '2px', letterSpacing: '-0.02em' }}>
+          <div style={{ flex: isMobile ? 1 : 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
+              <Zap size={isMobile ? 20 : 28} color="white" strokeWidth={2.5} />
+              <h1 style={{ 
+                fontSize: isMobile ? '18px' : '28px', 
+                fontWeight: '700', 
+                color: 'white', 
+                marginBottom: '2px', 
+                letterSpacing: '-0.02em' 
+              }}>
                 Cloudflare AI
               </h1>
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', marginTop: '4px' }}>
-              Welcome back, <span style={{ fontWeight: '600' }}>{user.username}</span> · {models.length} models ready
-            </p>
+            {!isMobile && (
+              <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', marginTop: '4px' }}>
+                Welcome back, <span style={{ fontWeight: '600' }}>{user.username}</span> · {models.length} models ready
+              </p>
+            )}
           </div>
           
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            {stats && (
+          <div style={{ display: 'flex', gap: isMobile ? '6px' : '12px', alignItems: 'center' }}>
+            {!isMobile && stats && (
               <div style={{
                 background: 'rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
@@ -240,31 +263,31 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             <button
               onClick={onLogout}
               style={{
-                fontSize: '14px',
-                padding: '10px 20px',
+                fontSize: isMobile ? '12px' : '14px',
+                padding: isMobile ? '8px 12px' : '10px 20px',
                 background: 'rgba(255,255,255,0.2)',
                 border: '1px solid rgba(255,255,255,0.3)',
                 color: 'white',
-                borderRadius: '12px',
+                borderRadius: isMobile ? '8px' : '12px',
                 cursor: 'pointer',
                 fontWeight: '600',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: isMobile ? '4px' : '8px',
                 transition: 'all 0.2s',
                 backdropFilter: 'blur(10px)'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                if (!isMobile) e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <LogOut size={16} />
-              Logout
+              <LogOut size={isMobile ? 14 : 16} />
+              {!isMobile && 'Logout'}
             </button>
           </div>
         </div>
@@ -273,11 +296,15 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
         <div style={{
           background: 'rgba(0,0,0,0.05)',
           display: 'flex',
-          gap: '8px',
-          paddingLeft: '32px',
-          paddingRight: '32px',
+          gap: isMobile ? '4px' : '8px',
+          paddingLeft: isMobile ? '8px' : '32px',
+          paddingRight: isMobile ? '8px' : '32px',
           maxWidth: '1600px',
-          margin: '0 auto'
+          margin: '0 auto',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
         }}>
           {[
             { id: 'chat', icon: MessageSquare, label: 'Chat', tab: 'chat' },
@@ -290,22 +317,24 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
               key={id}
               onClick={() => setActiveTab(tab as Tab)}
               style={{
-                padding: '14px 24px',
+                padding: isMobile ? '10px 16px' : '14px 24px',
                 border: 'none',
                 background: activeTab === tab ? 'rgba(255,255,255,0.95)' : 'transparent',
                 cursor: 'pointer',
-                borderRadius: activeTab === tab ? '12px 12px 0 0' : '0',
+                borderRadius: activeTab === tab ? (isMobile ? '8px 8px 0 0' : '12px 12px 0 0') : '0',
                 color: activeTab === tab ? '#667eea' : 'rgba(255,255,255,0.85)',
                 fontWeight: activeTab === tab ? '600' : '500',
                 transition: 'all 0.2s',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                fontSize: '15px',
-                position: 'relative'
+                gap: isMobile ? '6px' : '8px',
+                fontSize: isMobile ? '13px' : '15px',
+                position: 'relative',
+                flexShrink: 0,
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={(e) => {
-                if (activeTab !== tab) {
+                if (activeTab !== tab && !isMobile) {
                   e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
                 }
               }}
@@ -315,8 +344,8 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
                 }
               }}
             >
-              <Icon size={18} strokeWidth={2} />
-              {label}
+              <Icon size={isMobile ? 16 : 18} strokeWidth={2} />
+              {!isMobile || label.length <= 6 ? label : ''}
             </button>
           ))}
         </div>
