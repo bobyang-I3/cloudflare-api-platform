@@ -38,3 +38,7 @@ dist/
 *.db
 app.db
 
+
+# Environment variables
+server/.env
+*.db
