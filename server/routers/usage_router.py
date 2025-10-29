@@ -95,3 +95,101 @@ def get_user_quota(
     """
     return get_user_remaining_quota(current_user, db)
 
+
+@router.get("/charts/daily")
+def get_daily_usage_chart(
+    days: int = Query(default=7, ge=1, le=90),
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Get daily usage statistics for charts (token usage, requests, cost)
+    """
+    from models_credit import CreditTransaction, TransactionType
+    
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    # Query usage logs grouped by date
+    daily_data = db.query(
+        func.date(UsageLog.timestamp).label('date'),
+        func.count(UsageLog.id).label('requests'),
+        func.sum(UsageLog.total_tokens).label('tokens'),
+        func.sum(UsageLog.input_tokens).label('input_tokens'),
+        func.sum(UsageLog.output_tokens).label('output_tokens')
+    ).filter(
+        UsageLog.user_id == current_user.id,
+        UsageLog.timestamp >= start_date
+    ).group_by(
+        func.date(UsageLog.timestamp)
+    ).order_by(
+        func.date(UsageLog.timestamp)
+    ).all()
+    
+    # Query credit consumption by date
+    daily_cost = db.query(
+        func.date(CreditTransaction.created_at).label('date'),
+        func.sum(CreditTransaction.amount).label('cost')
+    ).filter(
+        CreditTransaction.user_id == current_user.id,
+        CreditTransaction.type == TransactionType.CONSUMPTION,
+        CreditTransaction.created_at >= start_date
+    ).group_by(
+        func.date(CreditTransaction.created_at)
+    ).all()
+    
+    # Create a dictionary for easy lookup
+    cost_by_date = {str(row.date): abs(row.cost) for row in daily_cost}
+    
+    # Format data for chart
+    chart_data = []
+    for row in daily_data:
+        date_str = str(row.date)
+        chart_data.append({
+            "date": date_str,
+            "requests": row.requests or 0,
+            "tokens": row.tokens or 0,
+            "input_tokens": row.input_tokens or 0,
+            "output_tokens": row.output_tokens or 0,
+            "cost": cost_by_date.get(date_str, 0.0)
+        })
+    
+    return chart_data
+
+
+@router.get("/charts/model-usage")
+def get_model_usage_chart(
+    days: int = Query(default=30, ge=1, le=365),
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Get model usage distribution for pie/bar charts
+    """
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    model_data = db.query(
+        UsageLog.model_name,
+        func.count(UsageLog.id).label('requests'),
+        func.sum(UsageLog.total_tokens).label('tokens')
+    ).filter(
+        UsageLog.user_id == current_user.id,
+        UsageLog.timestamp >= start_date
+    ).group_by(
+        UsageLog.model_name
+    ).order_by(
+        func.sum(UsageLog.total_tokens).desc()
+    ).limit(10).all()  # Top 10 models
+    
+    chart_data = []
+    for row in model_data:
+        # Extract model name (remove @cf/ prefix)
+        model_name = row.model_name.replace('@cf/', '').replace('-', ' ').title()
+        chart_data.append({
+            "name": model_name,
+            "requests": row.requests or 0,
+            "tokens": row.tokens or 0,
+            "value": row.tokens or 0  # for pie chart
+        })
+    
+    return chart_data
+

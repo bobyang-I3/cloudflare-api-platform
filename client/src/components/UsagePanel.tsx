@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { usageApi, UsageStats, UsageLog } from '../api';
+import UsageCharts from './UsageCharts';
+import { BarChart3, Table } from 'lucide-react';
 
 interface UsagePanelProps {
   token: string;
 }
 
+type UsageTab = 'stats' | 'charts';
+
 export default function UsagePanel({ token }: UsagePanelProps) {
+  const [activeTab, setActiveTab] = useState<UsageTab>('charts');
   const [stats, setStats] = useState<UsageStats | null>(null);
   const [logs, setLogs] = useState<UsageLog[]>([]);
   const [days, setDays] = useState(30);
@@ -31,16 +36,70 @@ export default function UsagePanel({ token }: UsagePanelProps) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-        <p style={{ color: '#6b7280' }}>Loading usage data...</p>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+      {/* Tabs */}
+      <div style={{ marginBottom: '24px', borderBottom: '2px solid var(--border-color)' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={() => setActiveTab('charts')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'charts' ? 'var(--accent-primary)' : 'transparent',
+              color: activeTab === 'charts' ? 'white' : 'var(--text-secondary)',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '-2px',
+              borderBottom: activeTab === 'charts' ? '2px solid var(--accent-primary)' : 'none'
+            }}
+          >
+            <BarChart3 size={18} />
+            Charts
+          </button>
+          <button
+            onClick={() => setActiveTab('stats')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'stats' ? 'var(--accent-primary)' : 'transparent',
+              color: activeTab === 'stats' ? 'white' : 'var(--text-secondary)',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '-2px',
+              borderBottom: activeTab === 'stats' ? '2px solid var(--accent-primary)' : 'none'
+            }}
+          >
+            <Table size={18} />
+            Table View
+          </button>
+        </div>
+      </div>
+
+      {/* Charts Tab */}
+      {activeTab === 'charts' && (
+        <UsageCharts token={token} />
+      )}
+
+      {/* Stats Tab */}
+      {activeTab === 'stats' && loading && (
+        <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>Loading usage data...</p>
+        </div>
+      )}
+
+      {activeTab === 'stats' && !loading && (
+        <div>
       {/* Stats Cards */}
       <div style={{
         display: 'grid',
@@ -255,6 +314,8 @@ export default function UsagePanel({ token }: UsagePanelProps) {
           </div>
         )}
       </div>
+        </div>
+      )}
     </div>
   );
 }

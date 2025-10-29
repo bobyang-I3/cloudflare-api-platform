@@ -156,6 +156,22 @@ export interface UsageStats {
   by_task: Record<string, { requests: number; tokens: number }>;
 }
 
+export interface DailyUsageData {
+  date: string;
+  requests: number;
+  tokens: number;
+  input_tokens: number;
+  output_tokens: number;
+  cost: number;
+}
+
+export interface ModelUsageData {
+  name: string;
+  requests: number;
+  tokens: number;
+  value: number;
+}
+
 export const usageApi = {
   getStats: async (token: string, days: number = 30): Promise<UsageStats> => {
     const response = await fetch(`${API_BASE}/usage/stats?days=${days}`, {
@@ -169,6 +185,20 @@ export const usageApi = {
       headers: { Authorization: `Bearer ${token}` },
     });
     return handleResponse<UsageLog[]>(response);
+  },
+
+  getDailyChart: async (token: string, days: number = 7): Promise<DailyUsageData[]> => {
+    const response = await fetch(`${API_BASE}/usage/charts/daily?days=${days}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<DailyUsageData[]>(response);
+  },
+
+  getModelUsageChart: async (token: string, days: number = 30): Promise<ModelUsageData[]> => {
+    const response = await fetch(`${API_BASE}/usage/charts/model-usage?days=${days}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<ModelUsageData[]>(response);
   },
 };
 
