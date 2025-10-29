@@ -19,6 +19,17 @@ export default function CreditPanel({ token }: CreditPanelProps) {
   const [transferError, setTransferError] = useState('');
   const [transferLoading, setTransferLoading] = useState(false);
   const [transferSuccess, setTransferSuccess] = useState(false);
+  
+  // Mobile responsive state
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -87,7 +98,7 @@ export default function CreditPanel({ token }: CreditPanelProps) {
     <div style={{ 
       minHeight: '100vh', 
       background: 'linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 50%, #f3e5f5 100%)',
-      padding: '24px'
+      padding: isMobile ? '12px' : '24px'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* Premium Balance Card */}
@@ -95,50 +106,50 @@ export default function CreditPanel({ token }: CreditPanelProps) {
           <div style={{
             position: 'relative',
             overflow: 'hidden',
-            borderRadius: '24px',
+            borderRadius: isMobile ? '16px' : '24px',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            padding: '40px',
-            marginBottom: '24px',
+            padding: isMobile ? '20px' : '40px',
+            marginBottom: isMobile ? '16px' : '24px',
             boxShadow: '0 20px 60px rgba(102, 126, 234, 0.4)'
           }}>
             <div style={{
               position: 'absolute',
-              top: '-100px',
-              right: '-100px',
-              width: '300px',
-              height: '300px',
+              top: isMobile ? '-50px' : '-100px',
+              right: isMobile ? '-50px' : '-100px',
+              width: isMobile ? '150px' : '300px',
+              height: isMobile ? '150px' : '300px',
               background: 'rgba(255,255,255,0.1)',
               borderRadius: '50%'
             }}></div>
             
             <div style={{ position: 'relative', zIndex: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? '16px' : '32px' }}>
                 <div>
-                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', marginBottom: '8px' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: isMobile ? '12px' : '14px', marginBottom: '8px' }}>
                     Available Balance
                   </div>
-                  <div style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', letterSpacing: '-1px' }}>
+                  <div style={{ color: 'white', fontSize: isMobile ? '32px' : '48px', fontWeight: 'bold', letterSpacing: '-1px' }}>
                     {balance.balance.toFixed(2)}
-                    <span style={{ fontSize: '24px', marginLeft: '8px', opacity: 0.9 }}>credits</span>
+                    <span style={{ fontSize: isMobile ? '16px' : '24px', marginLeft: '8px', opacity: 0.9 }}>credits</span>
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginTop: '8px' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: isMobile ? '12px' : '14px', marginTop: '8px' }}>
                     ≈ ${(balance.balance * 0.01).toFixed(4)} USD
                   </div>
                 </div>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(1, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? '10px' : '16px' }}>
                 <div style={{
                   background: 'rgba(255,255,255,0.15)',
                   backdropFilter: 'blur(10px)',
-                  borderRadius: '16px',
-                  padding: '16px',
+                  borderRadius: isMobile ? '12px' : '16px',
+                  padding: isMobile ? '12px' : '16px',
                   border: '1px solid rgba(255,255,255,0.2)'
                 }}>
-                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', marginBottom: '4px' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: isMobile ? '11px' : '12px', marginBottom: '4px' }}>
                     Total Received
                   </div>
-                  <div style={{ color: 'white', fontSize: '24px', fontWeight: '600' }}>
+                  <div style={{ color: 'white', fontSize: isMobile ? '18px' : '24px', fontWeight: '600' }}>
                     {balance.total_deposited.toFixed(2)}
                   </div>
                 </div>
@@ -146,14 +157,14 @@ export default function CreditPanel({ token }: CreditPanelProps) {
                 <div style={{
                   background: 'rgba(255,255,255,0.15)',
                   backdropFilter: 'blur(10px)',
-                  borderRadius: '16px',
-                  padding: '16px',
+                  borderRadius: isMobile ? '12px' : '16px',
+                  padding: isMobile ? '12px' : '16px',
                   border: '1px solid rgba(255,255,255,0.2)'
                 }}>
-                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', marginBottom: '4px' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: isMobile ? '11px' : '12px', marginBottom: '4px' }}>
                     Total Spent
                   </div>
-                  <div style={{ color: 'white', fontSize: '24px', fontWeight: '600' }}>
+                  <div style={{ color: 'white', fontSize: isMobile ? '18px' : '24px', fontWeight: '600' }}>
                     {balance.total_consumed.toFixed(4)}
                   </div>
                 </div>
@@ -161,14 +172,14 @@ export default function CreditPanel({ token }: CreditPanelProps) {
                 <div style={{
                   background: 'rgba(255,255,255,0.15)',
                   backdropFilter: 'blur(10px)',
-                  borderRadius: '16px',
-                  padding: '16px',
+                  borderRadius: isMobile ? '12px' : '16px',
+                  padding: isMobile ? '12px' : '16px',
                   border: '1px solid rgba(255,255,255,0.2)'
                 }}>
-                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', marginBottom: '4px' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: isMobile ? '11px' : '12px', marginBottom: '4px' }}>
                     Transactions
                   </div>
-                  <div style={{ color: 'white', fontSize: '24px', fontWeight: '600' }}>
+                  <div style={{ color: 'white', fontSize: isMobile ? '18px' : '24px', fontWeight: '600' }}>
                     {transactions.length}
                   </div>
                 </div>
@@ -178,7 +189,7 @@ export default function CreditPanel({ token }: CreditPanelProps) {
         )}
 
         {/* Tab Navigation */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? '10px' : '16px', marginBottom: isMobile ? '16px' : '24px' }}>
           {[
             { id: 'overview', label: 'Overview', icon: '📊' },
             { id: 'transfer', label: 'Transfer', icon: '💸' },

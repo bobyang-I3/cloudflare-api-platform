@@ -16,6 +16,17 @@ export default function UsageCharts({ token }: UsageChartsProps) {
   const [modelData, setModelData] = useState<ModelUsageData[]>([]);
   const [timeRange, setTimeRange] = useState(7);
   const [loading, setLoading] = useState(true);
+  
+  // Mobile responsive
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     loadChartData();
@@ -78,17 +89,18 @@ export default function UsageCharts({ token }: UsageChartsProps) {
       </div>
 
       {/* Charts Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(500px, 1fr))', gap: isMobile ? '16px' : '24px' }}>
         {/* Daily Usage Line Chart */}
         <div style={{
           background: '#ffffff',
           border: '1px solid #e5e7eb',
-          borderRadius: '12px',
-          padding: '24px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          borderRadius: isMobile ? '8px' : '12px',
+          padding: isMobile ? '12px' : '24px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden'
         }}>
-          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Daily Token Usage</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 style={{ marginBottom: isMobile ? '12px' : '16px', color: '#1f2937', fontSize: isMobile ? '14px' : '16px' }}>Daily Token Usage</h3>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <LineChart data={dailyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="date" stroke="#6b7280" />
@@ -133,12 +145,13 @@ export default function UsageCharts({ token }: UsageChartsProps) {
         <div style={{
           background: '#ffffff',
           border: '1px solid #e5e7eb',
-          borderRadius: '12px',
-          padding: '24px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          borderRadius: isMobile ? '8px' : '12px',
+          padding: isMobile ? '12px' : '24px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden'
         }}>
-          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Daily Credit Consumption</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 style={{ marginBottom: isMobile ? '12px' : '16px', color: '#1f2937', fontSize: isMobile ? '14px' : '16px' }}>Daily Credit Consumption</h3>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <LineChart data={dailyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="date" stroke="#6b7280" />
@@ -167,12 +180,13 @@ export default function UsageCharts({ token }: UsageChartsProps) {
         <div style={{
           background: '#ffffff',
           border: '1px solid #e5e7eb',
-          borderRadius: '12px',
-          padding: '24px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          borderRadius: isMobile ? '8px' : '12px',
+          padding: isMobile ? '12px' : '24px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden'
         }}>
-          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Model Usage (Top 10)</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 style={{ marginBottom: isMobile ? '12px' : '16px', color: '#1f2937', fontSize: isMobile ? '14px' : '16px' }}>Model Usage (Top 10)</h3>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <BarChart data={modelData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis 
@@ -207,12 +221,13 @@ export default function UsageCharts({ token }: UsageChartsProps) {
         <div style={{
           background: '#ffffff',
           border: '1px solid #e5e7eb',
-          borderRadius: '12px',
-          padding: '24px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          borderRadius: isMobile ? '8px' : '12px',
+          padding: isMobile ? '12px' : '24px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden'
         }}>
-          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Model Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 style={{ marginBottom: isMobile ? '12px' : '16px', color: '#1f2937', fontSize: isMobile ? '14px' : '16px' }}>Model Distribution</h3>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <PieChart>
               <Pie
                 data={modelData}
@@ -220,7 +235,7 @@ export default function UsageCharts({ token }: UsageChartsProps) {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={100}
+                outerRadius={isMobile ? 60 : 100}
                 label={({ percent }: { percent: number }) => `${(percent * 100).toFixed(0)}%`}
                 labelLine={false}
               >
@@ -236,14 +251,14 @@ export default function UsageCharts({ token }: UsageChartsProps) {
                 }}
               />
               <Legend 
-                layout="vertical" 
-                align="right" 
-                verticalAlign="middle"
+                layout={isMobile ? "horizontal" : "vertical"} 
+                align={isMobile ? "center" : "right"} 
+                verticalAlign={isMobile ? "bottom" : "middle"}
                 formatter={(value: string) => {
                   const shortName = value.split('/').pop() || value;
-                  return shortName.length > 20 ? shortName.substring(0, 17) + '...' : shortName;
+                  return shortName.length > (isMobile ? 10 : 20) ? shortName.substring(0, (isMobile ? 8 : 17)) + '...' : shortName;
                 }}
-                wrapperStyle={{ fontSize: '12px' }}
+                wrapperStyle={{ fontSize: isMobile ? '10px' : '12px' }}
               />
             </PieChart>
           </ResponsiveContainer>
