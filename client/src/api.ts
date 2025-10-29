@@ -130,6 +130,68 @@ export const aiApi = {
     });
     return handleResponse<ChatResponse>(response);
   },
+
+  // Streaming chat API
+  chatStream: async (
+    apiKey: string, 
+    request: ChatRequest,
+    onChunk: (text: string) => void,
+    onComplete: (fullText: string) => void,
+    onError: (error: string) => void
+  ): Promise<void> => {
+    try {
+      const response = await fetch(`${API_BASE}/ai/chat/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        throw new Error(errorData.detail || `HTTP ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.response) {
+                fullText += parsed.response;
+                onChunk(parsed.response);
+              }
+            } catch (e) {
+              // Skip invalid JSON
+            }
+          }
+        }
+      }
+
+      onComplete(fullText);
+    } catch (error: any) {
+      onError(error.message || 'Stream failed');
+    }
+  },
 };
 
 // ============= Usage API =============

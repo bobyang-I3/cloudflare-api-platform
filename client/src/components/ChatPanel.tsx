@@ -89,45 +89,76 @@ export default function ChatPanel({
     // Save image reference before clearing
     const imageToSend = uploadedImage;
     
-    // Add message to UI
+    // Add user message to UI
     isInternalUpdate.current = true;
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setError('');
     setLoading(true);
 
+    // Add empty assistant message for streaming
+    const assistantMessageIndex = messages.length + 1;
+    const tempAssistantMessage: MessageWithMetadata = {
+      role: 'assistant',
+      content: ''
+    };
+    
+    isInternalUpdate.current = true;
+    setMessages(prev => [...prev, tempAssistantMessage]);
+
     try {
-      const response = await aiApi.chat(apiKey, {
-        messages: [...messages, userMessage],
-        model: selectedModel
-      });
-
-      const assistantMessage: MessageWithMetadata = {
-        role: 'assistant',
-        content: response.response,
-        tokens: response.total_tokens
-      };
-
-      isInternalUpdate.current = true;
-      setMessages(prev => [...prev, assistantMessage]);
-      
-      // Only clear image after successful response
-      setUploadedImage(null);
+      await aiApi.chatStream(
+        apiKey,
+        {
+          messages: [...messages, userMessage],
+          model: selectedModel
+        },
+        // onChunk: Update message content as chunks arrive
+        (chunk: string) => {
+          setMessages(prev => {
+            const newMessages = [...prev];
+            newMessages[assistantMessageIndex] = {
+              ...newMessages[assistantMessageIndex],
+              content: newMessages[assistantMessageIndex].content + chunk
+            };
+            return newMessages;
+          });
+        },
+        // onComplete: Streaming finished
+        (fullText: string) => {
+          setLoading(false);
+          setUploadedImage(null);
+        },
+        // onError: Handle errors
+        (error: string) => {
+          console.error('Stream error:', error);
+          setError(error);
+          setLoading(false);
+          
+          // Remove both user and assistant messages on error
+          isInternalUpdate.current = true;
+          setMessages(prev => prev.slice(0, -2));
+          
+          // Restore image if failed
+          if (imageToSend) {
+            setUploadedImage(imageToSend);
+          }
+        }
+      );
     } catch (err) {
       console.error('Chat error:', err);
       const errorMsg = err instanceof Error ? err.message : 'Failed to send message. Please try again.';
       setError(errorMsg);
+      setLoading(false);
       
-      // Remove user message on error
+      // Remove both messages on error
       isInternalUpdate.current = true;
-      setMessages(prev => prev.slice(0, -1));
+      setMessages(prev => prev.slice(0, -2));
       
       // Restore image if failed
       if (imageToSend) {
         setUploadedImage(imageToSend);
       }
-    } finally {
-      setLoading(false);
     }
   };
   

@@ -44,7 +44,7 @@ export default function UsageCharts({ token }: UsageChartsProps) {
         alignItems: 'center',
         justifyContent: 'center',
         height: '400px',
-        color: 'var(--text-secondary)'
+        color: '#6b7280'
       }}>
         Loading charts...
       </div>
@@ -55,16 +55,16 @@ export default function UsageCharts({ token }: UsageChartsProps) {
     <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Time Range Selector */}
       <div style={{ marginBottom: '24px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Time Range:</span>
+        <span style={{ fontWeight: '600', color: '#1f2937' }}>Time Range:</span>
         {[7, 14, 30].map((days) => (
           <button
             key={days}
             onClick={() => setTimeRange(days)}
             style={{
               padding: '8px 16px',
-              background: timeRange === days ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-              color: timeRange === days ? 'white' : 'var(--text-primary)',
-              border: '1px solid var(--border-color)',
+              background: timeRange === days ? '#667eea' : '#f3f4f6',
+              color: timeRange === days ? 'white' : '#1f2937',
+              border: '1px solid #e5e7eb',
               borderRadius: '6px',
               fontSize: '14px',
               fontWeight: '500',
@@ -81,22 +81,22 @@ export default function UsageCharts({ token }: UsageChartsProps) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', gap: '24px' }}>
         {/* Daily Usage Line Chart */}
         <div style={{
-          background: 'var(--bg-primary)',
-          border: '1px solid var(--border-color)',
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
-          boxShadow: 'var(--shadow-md)'
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
         }}>
-          <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Daily Token Usage</h3>
+          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Daily Token Usage</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dailyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-              <XAxis dataKey="date" stroke="var(--text-secondary)" />
-              <YAxis stroke="var(--text-secondary)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="date" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
               <Tooltip
                 contentStyle={{
-                  background: 'var(--bg-primary)',
-                  border: '1px solid var(--border-color)',
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px'
                 }}
               />
@@ -131,22 +131,22 @@ export default function UsageCharts({ token }: UsageChartsProps) {
 
         {/* Daily Cost Line Chart */}
         <div style={{
-          background: 'var(--bg-primary)',
-          border: '1px solid var(--border-color)',
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
-          boxShadow: 'var(--shadow-md)'
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
         }}>
-          <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Daily Credit Consumption</h3>
+          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Daily Credit Consumption</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dailyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-              <XAxis dataKey="date" stroke="var(--text-secondary)" />
-              <YAxis stroke="var(--text-secondary)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="date" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
               <Tooltip
                 contentStyle={{
-                  background: 'var(--bg-primary)',
-                  border: '1px solid var(--border-color)',
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px'
                 }}
               />
@@ -165,22 +165,22 @@ export default function UsageCharts({ token }: UsageChartsProps) {
 
         {/* Model Usage Bar Chart */}
         <div style={{
-          background: 'var(--bg-primary)',
-          border: '1px solid var(--border-color)',
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
-          boxShadow: 'var(--shadow-md)'
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
         }}>
-          <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Model Usage (Top 10)</h3>
+          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Model Usage (Top 10)</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={modelData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-              <XAxis dataKey="name" stroke="var(--text-secondary)" angle={-45} textAnchor="end" height={100} />
-              <YAxis stroke="var(--text-secondary)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" stroke="#6b7280" angle={-45} textAnchor="end" height={100} />
+              <YAxis stroke="#6b7280" />
               <Tooltip
                 contentStyle={{
-                  background: 'var(--bg-primary)',
-                  border: '1px solid var(--border-color)',
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px'
                 }}
               />
@@ -192,13 +192,13 @@ export default function UsageCharts({ token }: UsageChartsProps) {
 
         {/* Model Usage Pie Chart */}
         <div style={{
-          background: 'var(--bg-primary)',
-          border: '1px solid var(--border-color)',
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
-          boxShadow: 'var(--shadow-md)'
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
         }}>
-          <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Model Distribution</h3>
+          <h3 style={{ marginBottom: '16px', color: '#1f2937' }}>Model Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -216,8 +216,8 @@ export default function UsageCharts({ token }: UsageChartsProps) {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  background: 'var(--bg-primary)',
-                  border: '1px solid var(--border-color)',
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px'
                 }}
               />
