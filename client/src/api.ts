@@ -259,6 +259,12 @@ export interface CreditDepositRequest {
   description?: string;
 }
 
+export interface CreditTransferRequest {
+  to_username: string;
+  amount: number;
+  description?: string;
+}
+
 export const creditApi = {
   getBalance: async (token: string): Promise<CreditBalance> => {
     const response = await fetch(`${API_BASE}/credits/balance`, {
@@ -289,6 +295,18 @@ export const creditApi = {
       body: JSON.stringify(data),
     });
     return handleResponse<CreditTransaction>(response);
+  },
+
+  transfer: async (token: string, data: CreditTransferRequest): Promise<CreditTransaction[]> => {
+    const response = await fetch(`${API_BASE}/credits/transfer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse<CreditTransaction[]>(response);
   },
 };
 
