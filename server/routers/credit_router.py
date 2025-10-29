@@ -12,7 +12,7 @@ from schemas_credit import (
     CreditBalanceResponse, CreditDepositRequest, CreditTransactionResponse,
     ModelPricingResponse, CreditStatsResponse
 )
-from auth import get_current_user, get_current_user_from_api_key
+from auth import get_current_user_from_token, get_current_user_from_api_key
 from credit_service import CreditService
 
 router = APIRouter(prefix="/credits", tags=["Credits"])
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/credits", tags=["Credits"])
 
 @router.get("/balance", response_model=CreditBalanceResponse)
 def get_my_balance(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """Get current user's credit balance"""
@@ -31,7 +31,7 @@ def get_my_balance(
 @router.get("/balance/{user_id}", response_model=CreditBalanceResponse)
 def get_user_balance(
     user_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """Get specific user's credit balance (admin only)"""
@@ -45,7 +45,7 @@ def get_user_balance(
 @router.post("/deposit", response_model=CreditTransactionResponse)
 def deposit_credits(
     request: CreditDepositRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """
@@ -75,7 +75,7 @@ def deposit_credits(
 def get_my_transactions(
     limit: int = 100,
     offset: int = 0,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """Get current user's credit transaction history"""
@@ -88,7 +88,7 @@ def get_user_transactions(
     user_id: str,
     limit: int = 100,
     offset: int = 0,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """Get specific user's credit transaction history (admin only)"""
@@ -122,7 +122,7 @@ def get_single_model_pricing(
 
 @router.get("/stats", response_model=CreditStatsResponse)
 def get_credit_stats(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """Get platform-wide credit statistics (admin only)"""
