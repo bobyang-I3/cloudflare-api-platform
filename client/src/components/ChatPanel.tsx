@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import { Mic, Image as ImageIcon, X } from 'lucide-react';
 import { aiApi, Model, ChatMessage } from '../api';
+import { AudioRecorder } from './AudioRecorder';
 
 interface ChatPanelProps {
   apiKey: string;
@@ -28,7 +30,9 @@ export default function ChatPanel({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedAudio, setUploadedAudio] = useState<{ data: string; filename: string } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showAudioRecorder, setShowAudioRecorder] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isInternalUpdate = useRef(false);
@@ -73,20 +77,35 @@ export default function ChatPanel({
   };
 
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    // For ASR models, audio is required
+    const currentModel = models.find(m => m.id === selectedModel);
+    const isASRModel = currentModel?.task === 'automatic-speech-recognition';
+    
+    if (isASRModel && !uploadedAudio) {
+      setError('Please record or upload an audio file for speech recognition');
+      return;
+    }
+    
+    if (!isASRModel && (!input.trim() || loading)) return;
 
     const userMessage: any = {
       role: 'user',
-      content: input.trim()
+      content: isASRModel && uploadedAudio ? `[Audio: ${uploadedAudio.filename}]` : input.trim()
     };
     
     // Add image data if uploaded (for vision models)
     if (uploadedImage) {
       userMessage.image = uploadedImage;
     }
+    
+    // Add audio data if uploaded (for ASR models)
+    if (uploadedAudio) {
+      userMessage.audio = uploadedAudio.data;
+    }
 
-    // Save image reference before clearing
+    // Save references before clearing
     const imageToSend = uploadedImage;
+    const audioToSend = uploadedAudio;
     
     // Add user message to UI
     isInternalUpdate.current = true;
@@ -95,6 +114,7 @@ export default function ChatPanel({
     setError('');
     setLoading(true);
     setUploadedImage(null);
+    setUploadedAudio(null);
 
     try {
       // Use non-streaming chat API for reliability
@@ -123,9 +143,12 @@ export default function ChatPanel({
       isInternalUpdate.current = true;
       setMessages(prev => prev.slice(0, -1));
       
-      // Restore image if failed
+      // Restore files if failed
       if (imageToSend) {
         setUploadedImage(imageToSend);
+      }
+      if (audioToSend) {
+        setUploadedAudio(audioToSend);
       }
     }
   };
@@ -565,6 +588,69 @@ export default function ChatPanel({
           </div>
         )}
         
+        {/* Audio Recorder for ASR Models */}
+        {models.find(m => m.id === selectedModel)?.task === 'automatic-speech-recognition' && showAudioRecorder && (
+          <div style={{ maxWidth: '900px', margin: '0 auto 16px' }}>
+            <AudioRecorder
+              onAudioCapture={(audioBase64, filename) => {
+                setUploadedAudio({ data: audioBase64, filename });
+                setShowAudioRecorder(false);
+                setError('');
+              }}
+              onCancel={() => setShowAudioRecorder(false)}
+            />
+          </div>
+        )}
+        
+        {/* Uploaded Audio Display */}
+        {uploadedAudio && (
+          <div style={{
+            maxWidth: '900px',
+            margin: '0 auto 12px',
+            padding: '16px',
+            background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                background: '#10b981',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Mic size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: '600', color: '#047857' }}>Audio Ready</div>
+                <div style={{ fontSize: '13px', color: '#065f46' }}>{uploadedAudio.filename}</div>
+              </div>
+            </div>
+            <button
+              onClick={() => setUploadedAudio(null)}
+              style={{
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+              title="Remove audio"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        )}
+        
         {/* Image Upload Area for Vision Models */}
         {models.find(m => m.id === selectedModel)?.task === 'image-to-text' && (
           <div style={{ maxWidth: '900px', margin: '0 auto 12px' }}>
@@ -645,38 +731,82 @@ export default function ChatPanel({
         )}
         
         <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', maxWidth: '900px', margin: '0 auto' }}>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={loading ? "Waiting for response..." : (models.find(m => m.id === selectedModel)?.task === 'image-to-text' ? "Ask about the image..." : "Type your message... (Shift+Enter for new line)")}
-            disabled={loading}
-            rows={3}
-            style={{
-              flex: 1,
-              padding: '14px 16px',
-              borderRadius: '12px',
-              border: '1px solid #d1d5db',
-              fontSize: '15px',
-              resize: 'none',
-              fontFamily: 'inherit',
-              lineHeight: '1.5'
-            }}
-          />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim() || loading}
-            className="button button-primary"
-            style={{
-              padding: '14px 32px',
-              fontSize: '15px',
-              minWidth: '100px',
-              opacity: (!input.trim() || loading) ? 0.5 : 1,
-              cursor: (!input.trim() || loading) ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {loading ? '⏳' : '📤'} Send
-          </button>
+          {/* For ASR models, show audio button instead of text input */}
+          {models.find(m => m.id === selectedModel)?.task === 'automatic-speech-recognition' ? (
+            <>
+              <button
+                onClick={() => setShowAudioRecorder(!showAudioRecorder)}
+                className="button"
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  fontSize: '15px',
+                  background: showAudioRecorder ? '#e5e7eb' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: showAudioRecorder ? '#374151' : 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  fontWeight: '600'
+                }}
+              >
+                <Mic size={20} />
+                {showAudioRecorder ? 'Hide Recorder' : uploadedAudio ? 'Change Audio' : 'Record or Upload Audio'}
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={!uploadedAudio || loading}
+                className="button button-primary"
+                style={{
+                  padding: '14px 32px',
+                  fontSize: '15px',
+                  minWidth: '120px',
+                  opacity: (!uploadedAudio || loading) ? 0.5 : 1,
+                  cursor: (!uploadedAudio || loading) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {loading ? '⏳' : '🎤'} Transcribe
+              </button>
+            </>
+          ) : (
+            <>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder={loading ? "Waiting for response..." : (models.find(m => m.id === selectedModel)?.task === 'image-to-text' ? "Ask about the image..." : "Type your message... (Shift+Enter for new line)")}
+                disabled={loading}
+                rows={3}
+                style={{
+                  flex: 1,
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid #d1d5db',
+                  fontSize: '15px',
+                  resize: 'none',
+                  fontFamily: 'inherit',
+                  lineHeight: '1.5'
+                }}
+              />
+              <button
+                onClick={handleSend}
+                disabled={!input.trim() || loading}
+                className="button button-primary"
+                style={{
+                  padding: '14px 32px',
+                  fontSize: '15px',
+                  minWidth: '100px',
+                  opacity: (!input.trim() || loading) ? 0.5 : 1,
+                  cursor: (!input.trim() || loading) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {loading ? '⏳' : '📤'} Send
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

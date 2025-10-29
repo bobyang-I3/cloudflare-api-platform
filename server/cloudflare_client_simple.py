@@ -227,6 +227,69 @@ async def call_cloudflare_ai(
             "response_time_ms": response_time_ms
         }
     
+    # Handle automatic-speech-recognition models (Whisper)
+    if model_info["task"] == "automatic-speech-recognition":
+        # Extract audio data from messages
+        audio_data = messages[-1].get("audio") if messages else None
+        
+        if not audio_data:
+            raise ValueError("Please provide an audio file for speech recognition.")
+        
+        # Remove data URI prefix if present (e.g., "data:audio/wav;base64,...")
+        if isinstance(audio_data, str) and audio_data.startswith("data:audio"):
+            audio_data = audio_data.split(",")[1]
+        
+        # Convert base64 to byte array
+        import base64
+        try:
+            audio_bytes = base64.b64decode(audio_data)
+            audio_array = list(audio_bytes)  # Convert bytes to list of integers
+        except Exception as e:
+            raise ValueError(f"Failed to decode audio data: {str(e)}")
+        
+        payload = {
+            "audio": audio_array  # Array of integers (audio bytes)
+        }
+        
+        input_tokens = len(audio_array) // 1000  # Rough estimate: 1 token per KB
+        
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.post(url, json=payload, headers=headers)
+                
+                if not response.is_success:
+                    error_text = response.text
+                    if response.status_code == 401:
+                        raise Exception("Invalid API key or Account ID.")
+                    elif response.status_code == 404:
+                        raise Exception(f"Model '{model}' not found.")
+                    elif response.status_code == 429:
+                        raise Exception("Rate limit exceeded. Please wait and try again.")
+                    else:
+                        raise Exception(f"Audio transcription failed ({response.status_code}): {error_text}")
+                
+                data = response.json()
+        except httpx.TimeoutException:
+            raise Exception("Audio transcription timed out. Please try again.")
+        except httpx.RequestError as e:
+            raise Exception(f"Network error: {str(e)}")
+        
+        # Extract transcription text
+        response_text = data.get("result", {}).get("text", "")
+        if not response_text:
+            raise Exception("Model returned no transcription.")
+        
+        output_tokens = estimate_tokens(response_text)
+        response_time_ms = (time.time() - start_time) * 1000
+        
+        return {
+            "response": response_text,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": input_tokens + output_tokens,
+            "response_time_ms": response_time_ms
+        }
+    
     # Handle image-to-text models (vision models)
     if model_info["task"] == "image-to-text":
         # Extract prompt and image from messages
