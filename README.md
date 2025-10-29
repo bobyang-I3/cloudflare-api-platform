@@ -1,313 +1,396 @@
-# 🚀 Cloudflare API Billing Platform
+# Cloudflare AI API Platform
 
-一个功能完整的 AI API 代理和使用跟踪平台，支持 80+ 个 Cloudflare Workers AI 模型。
+A production-ready API platform for Cloudflare Workers AI models with comprehensive usage tracking, credit-based billing system, and modern web interface.
 
-## ✨ 主要特性
+## Overview
 
-- 🤖 **80+ AI模型支持** - 文本生成、图像生成、语音识别、文本转语音等
-- 💬 **GPT风格聊天界面** - 现代化的对话体验，支持Markdown和代码高亮
-- 📚 **对话历史管理** - 创建、保存、切换多个对话
-- 📊 **详细使用统计** - 按模型、按任务类型的Token使用追踪
-- 🔐 **完整认证系统** - 用户注册、登录、API Key管理
-- 🎨 **精美UI设计** - 响应式布局，平滑动画
+This platform provides a complete solution for managing and monitoring AI model usage through Cloudflare's Workers AI service. It features user authentication, credit management, detailed analytics, and an intuitive chat interface supporting 80+ AI models across multiple categories including text generation, image synthesis, speech recognition, and embeddings.
 
-## 🎯 快速开始
+## Key Features
 
-### 前置要求
+- **Multi-Model Support**: Access to 80+ Cloudflare Workers AI models
+- **Credit System**: Token-based billing with user balances and transaction history
+- **Usage Analytics**: Comprehensive tracking with charts and detailed logs
+- **Chat Interface**: Modern conversational UI with streaming responses
+- **Admin Dashboard**: User management and credit operations
+- **API Access**: RESTful API with authentication and rate limiting
+- **Responsive Design**: Mobile-optimized interface
 
-- Python 3.8+
-- Node.js 16+
-- npm或yarn
-
-### 安装和运行
-
-#### 方式一：自动启动（推荐）
-
-```bash
-cd /Users/chunyiyang/I3/api-billing-platform
-
-# 一键启动（后端+前端）
-./start.sh
-```
-
-#### 方式二：手动启动
-
-**1. 启动后端服务器**
-
-```bash
-cd /Users/chunyiyang/I3/api-billing-platform/server
-
-# 激活虚拟环境
-source venv/bin/activate
-
-# 安装依赖（首次运行）
-pip install -r requirements.txt
-
-# 启动服务器
-python main.py
-```
-
-服务器将在 `http://localhost:8000` 运行
-
-**2. 启动前端开发服务器**（新终端）
-
-```bash
-cd /Users/chunyiyang/I3/api-billing-platform/client
-
-# 安装依赖（首次运行）
-npm install
-
-# 启动开发服务器
-npm run dev
-```
-
-前端将在 `http://localhost:5173` 运行
-
-**3. 打开浏览器**
-
-访问 `http://localhost:5173` 开始使用！
-
-## 📖 使用指南
-
-### 1. 注册账户
-
-- 访问平台并点击"Register"
-- 填写用户名、邮箱和密码
-- 点击注册完成账户创建
-
-### 2. 开始聊天
-
-- 登录后默认进入聊天界面
-- 从模型选择器中选择你想要的AI模型（80+个可选）
-- 模型按任务类型分组：💬 文本生成、🎨 图像生成、🎤 语音识别等
-- 输入消息并点击发送
-
-### 3. 管理对话
-
-- 点击"➕ New Chat"创建新对话
-- 在左侧栏查看所有对话历史
-- 点击对话可切换
-- 点击✏️重命名对话
-- 点击🗑️删除对话
-- 点击◀️折叠/展开侧边栏
-
-### 4. 查看使用统计
-
-- 切换到"📊 Usage"标签页
-- 查看总Token使用量
-- 按任务类型和模型查看详细统计
-- 查看最近的API调用日志
-- 选择时间范围（7/30/90/365天）
-
-### 5. 管理API Key
-
-- 切换到"🔑 API Key"标签页
-- 查看你的API Key
-- 生成新的API Key（如需要）
-- 使用API Key进行外部API调用
-
-## 🎨 支持的模型类型
-
-### 💬 文本生成（37个模型）
-- GPT-OSS 120B
-- Llama 4 Scout 17B
-- Llama 3.3 70B / 3.1 8B
-- Qwen 2.5 32B / QwQ 32B
-- Mistral Small 3.1 24B
-- Gemma 3 12B
-- 等等...
-
-### 🎨 文本转图像（8个模型）
-- FLUX.1 Schnell
-- Leonardo Lucid Origin
-- Leonardo Phoenix 1.0
-- Stable Diffusion XL
-- Dreamshaper 8 LCM
-- 等等...
-
-### 🎤 语音识别（5个模型）
-- Whisper Large V3 Turbo
-- Whisper (Tiny EN)
-- Deepgram Flux
-- Deepgram Nova 3
-
-### 🔊 文本转语音（4个模型）
-- Deepgram Aura 2 (EN/ES)
-- MeloTTS
-
-### 🔢 文本嵌入（6个模型）
-- BGE M3
-- BGE Large/Base/Small EN
-- EmbeddingGemma 300M
-- PLaMo Embedding 1B
-
-### 其他
-- 🖼️ 图像转文本
-- 🌐 翻译
-- 📝 摘要
-- 📊 分类
-- 🔍 物体检测
-- 等等...
-
-## 🔧 技术栈
+## Technology Stack
 
 ### Backend
-- FastAPI - 现代Python Web框架
-- SQLAlchemy - ORM
-- SQLite/PostgreSQL - 数据库
-- JWT - 身份验证
-- Cloudflare Workers AI - AI模型API
+- **Framework**: FastAPI (Python)
+- **Database**: SQLite (development) / PostgreSQL (production)
+- **ORM**: SQLAlchemy
+- **Authentication**: JWT tokens
+- **Rate Limiting**: SlowAPI
+- **AI Provider**: Cloudflare Workers AI API
 
 ### Frontend
-- React 18 + TypeScript
-- Vite - 构建工具
-- CSS3 - 样式和动画
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Data Visualization**: Recharts
+- **Styling**: CSS3 with responsive design
 
-## 📁 项目结构
+## Prerequisites
+
+- Python 3.8 or higher
+- Node.js 16 or higher
+- npm or yarn
+- Cloudflare API credentials
+
+## Installation
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/yourusername/api-billing-platform.git
+cd api-billing-platform
+```
+
+### 2. Backend Setup
+
+```bash
+cd server
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your credentials
+```
+
+### 3. Frontend Setup
+
+```bash
+cd client
+
+# Install dependencies
+npm install
+
+# Build for production
+npm run build
+```
+
+### 4. Environment Configuration
+
+Create `server/.env` with the following:
+
+```env
+# Cloudflare Credentials
+CLOUDFLARE_API_KEY=your_api_key
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_API_BASE=https://api.cloudflare.com/client/v4
+
+# Database
+DATABASE_URL=sqlite:///./app.db
+
+# JWT Configuration
+JWT_SECRET_KEY=your_secret_key_here
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# API Configuration
+API_V1_PREFIX=/api
+CORS_ORIGINS=["http://localhost:5173","http://localhost:3000"]
+
+# Server
+HOST=0.0.0.0
+PORT=8000
+```
+
+## Running the Application
+
+### Development Mode
+
+**Terminal 1 - Backend:**
+```bash
+cd server
+source venv/bin/activate
+python main.py
+```
+Server runs on `http://localhost:8000`
+
+**Terminal 2 - Frontend:**
+```bash
+cd client
+npm run dev
+```
+Frontend runs on `http://localhost:5173`
+
+### Production Deployment
+
+The platform includes systemd service configurations for production deployment on Linux servers.
+
+**Backend Service** (`/etc/systemd/system/backend.service`):
+```ini
+[Unit]
+Description=Cloudflare API Platform - Backend
+After=network.target
+
+[Service]
+Type=simple
+User=your_user
+WorkingDirectory=/path/to/api-billing-platform/server
+Environment="PATH=/path/to/api-billing-platform/server/venv/bin"
+ExecStart=/path/to/api-billing-platform/server/venv/bin/python main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Frontend Service** (`/etc/systemd/system/frontend.service`):
+```ini
+[Unit]
+Description=Cloudflare API Platform - Frontend
+After=network.target
+
+[Service]
+Type=simple
+User=your_user
+WorkingDirectory=/path/to/api-billing-platform/client
+ExecStart=/usr/bin/npm run preview
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start services:
+```bash
+sudo systemctl enable backend frontend
+sudo systemctl start backend frontend
+```
+
+## Project Structure
 
 ```
 api-billing-platform/
-├── server/                    # Backend
-│   ├── main.py               # 主应用
-│   ├── cloudflare_client.py  # AI客户端
-│   ├── routers/              # API路由
-│   └── ...
-├── client/                    # Frontend
+├── server/                      # Backend application
+│   ├── main.py                 # FastAPI application entry
+│   ├── config.py               # Configuration management
+│   ├── database.py             # Database setup
+│   ├── models.py               # SQLAlchemy models
+│   ├── models_credit.py        # Credit system models
+│   ├── credit_service.py       # Credit business logic
+│   ├── cloudflare_client.py    # Cloudflare API client
+│   ├── rate_limit.py           # Rate limiting setup
+│   ├── routers/                # API endpoints
+│   │   ├── auth_router.py     # Authentication
+│   │   ├── ai_router.py       # AI model operations
+│   │   ├── usage_router.py    # Usage tracking
+│   │   ├── credit_router.py   # Credit management
+│   │   └── admin_router.py    # Admin operations
+│   ├── requirements.txt        # Python dependencies
+│   └── init_model_pricing.py  # Model pricing initialization
+│
+├── client/                      # Frontend application
 │   ├── src/
-│   │   ├── pages/            # 页面组件
-│   │   └── components/       # UI组件
-│   └── ...
-├── README.md                  # 本文件
-└── IMPLEMENTATION_COMPLETE.md # 详细实现文档
+│   │   ├── pages/
+│   │   │   ├── Login.tsx      # Login page
+│   │   │   └── Dashboard.tsx  # Main dashboard
+│   │   ├── components/
+│   │   │   ├── ChatPanel.tsx        # Chat interface
+│   │   │   ├── UsagePanel.tsx       # Analytics dashboard
+│   │   │   ├── CreditPanel.tsx      # Credit management
+│   │   │   ├── AdminPanel.tsx       # Admin interface
+│   │   │   └── AdminCreditPanel.tsx # Admin credit ops
+│   │   ├── api.ts             # API client
+│   │   └── App.tsx            # Root component
+│   ├── package.json           # Node dependencies
+│   └── vite.config.ts         # Vite configuration
+│
+└── README.md                   # This file
 ```
 
-## 📊 API端点
+## API Documentation
 
-### 认证
-- `POST /auth/register` - 注册新用户
-- `POST /auth/login` - 用户登录
+### Authentication Endpoints
 
-### AI
-- `GET /ai/models` - 获取所有模型列表
-- `POST /ai/chat` - 文本聊天
-- `POST /ai/chat/stream` - 流式聊天
-- `POST /ai/vision-chat` - 图像+文本聊天
-- `POST /ai/transcribe` - 音频转文字
-- `POST /ai/generate-image` - 文字生成图像
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Refresh access token
 
-### 使用统计
-- `GET /usage/stats` - 获取使用统计
-- `GET /usage/logs` - 获取使用日志
+### AI Model Endpoints
 
-完整API文档：启动服务器后访问 `http://localhost:8000/docs`
+- `GET /api/ai/models` - List all available models
+- `POST /api/ai/chat` - Text generation (non-streaming)
+- `POST /api/ai/chat/stream` - Text generation (streaming)
+- `POST /api/ai/vision-chat` - Vision model chat
+- `POST /api/ai/transcribe` - Audio transcription
+- `POST /api/ai/generate-image` - Image generation
 
-## 🔐 环境配置
+### Usage Endpoints
 
-后端配置文件位于 `server/.env`：
+- `GET /api/usage/stats` - Get usage statistics
+- `GET /api/usage/logs` - Get usage logs
+- `GET /api/usage/daily` - Get daily usage data
+
+### Credit Endpoints
+
+- `GET /api/credits/balance` - Get user balance
+- `GET /api/credits/transactions` - Get transaction history
+- `POST /api/credits/transfer` - Transfer credits to another user
+- `GET /api/credits/pricing` - Get model pricing
+
+### Admin Endpoints (Requires admin role)
+
+- `GET /api/admin/users` - List all users
+- `POST /api/admin/credits/deposit` - Deposit credits to user
+- `POST /api/admin/credits/deduct` - Deduct credits from user
+
+Interactive API documentation available at `http://localhost:8000/docs` (Swagger UI) and `http://localhost:8000/redoc` (ReDoc).
+
+## Credit System
+
+The platform uses a credit-based billing system where:
+- 1 Credit = $0.01 USD
+- Models are priced based on token usage (input/output)
+- Credits are deducted automatically on API calls
+- Users can transfer credits between accounts
+- Admins can deposit or deduct credits
+
+Model pricing is based on Cloudflare's official rates and initialized via `init_model_pricing_official.py`.
+
+## Database Schema
+
+### Core Tables
+
+- **users**: User accounts and authentication
+- **user_limits**: API rate limits per user
+- **usage_logs**: API call logs with token usage
+- **conversations**: Chat conversation history
+- **user_credits**: User credit balances
+- **credit_transactions**: Credit transaction history
+- **model_pricing**: Model pricing configuration
+
+## Security Features
+
+- JWT-based authentication with token refresh
+- Password hashing with secure algorithms
+- Rate limiting per user (10 requests/minute default)
+- CORS configuration for allowed origins
+- Admin-only endpoints with role validation
+
+## Monitoring and Analytics
+
+The platform provides comprehensive analytics including:
+- Daily token usage trends
+- Credit consumption tracking
+- Model usage distribution
+- Request response times
+- Per-user usage statistics
+
+## Development
+
+### Running Tests
 
 ```bash
-# Cloudflare配置
-CLOUDFLARE_API_KEY=your_api_key_here
-CLOUDFLARE_ACCOUNT_ID=your_account_id_here
+# Backend tests
+cd server
+pytest
 
-# 数据库配置
-DATABASE_URL=sqlite:///./app.db
-
-# JWT配置
-JWT_SECRET_KEY=your_secret_key_here
+# Frontend tests
+cd client
+npm test
 ```
 
-## 🐛 故障排除
-
-### 端口被占用
-
-如果端口8000或5173被占用：
+### Code Quality
 
 ```bash
-# 查找并终止占用端口的进程
+# Python linting
+cd server
+flake8 .
+black .
+
+# TypeScript linting
+cd client
+npm run lint
+```
+
+## Troubleshooting
+
+### Database Issues
+
+Reset database:
+```bash
+cd server
+rm app.db
+python main.py  # Auto-creates new database
+```
+
+### Port Conflicts
+
+Kill processes on ports:
+```bash
+# Linux/Mac
 lsof -ti:8000 | xargs kill -9
 lsof -ti:5173 | xargs kill -9
+
+# Windows
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
 ```
 
-### 依赖安装失败
+### Dependency Issues
 
+Reinstall dependencies:
 ```bash
-# 后端
+# Backend
 cd server
 rm -rf venv
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# 前端
+# Frontend
 cd client
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### 数据库问题
+## Performance Optimization
 
-```bash
-# 重置数据库
-cd server
-rm app.db
-python main.py  # 将自动创建新数据库
-```
+- Database indexing on frequently queried fields
+- Connection pooling for database
+- Response caching for model list
+- Lazy loading for frontend components
+- Code splitting for reduced bundle size
 
-## 📈 使用统计
+## Contributing
 
-系统会自动追踪：
-- 总请求数
-- Token使用量（输入/输出/总计）
-- 按模型的使用分布
-- 按任务类型的使用分布
-- 每次请求的响应时间
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 🎁 特色功能
+## License
 
-### 1. 智能模型选择器
-- 按任务类型分组显示
-- 显示模型状态（verified/beta/deprecated）
-- 实时显示模型描述
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### 2. 对话管理
-- 自动保存对话历史
-- 基于首条消息自动命名
-- 页面刷新后恢复上次对话
-- localStorage持久化
+## Acknowledgments
 
-### 3. GPT风格界面
-- 消息气泡设计
-- 头像系统（用户/助手）
-- Markdown渲染
-- 代码块语法高亮
-- 平滑动画效果
+- Cloudflare Workers AI for model infrastructure
+- FastAPI for the excellent Python web framework
+- React community for frontend libraries
 
-### 4. 实时反馈
-- Loading动画
-- Token使用量实时显示
-- 错误提示
-- 成功反馈
+## Support
 
-## 📝 许可证
-
-MIT License
-
-## 🤝 贡献
-
-欢迎提交Issue和Pull Request！
-
-## 📞 支持
-
-如有问题，请查阅：
-- `IMPLEMENTATION_COMPLETE.md` - 完整实现文档
-- API文档：`http://localhost:8000/docs`
-- 源代码注释
+For issues and questions:
+- Open an issue on GitHub
+- Check the API documentation at `/docs`
+- Review the implementation notes in the codebase
 
 ---
 
-**版本**: 2.0  
-**最后更新**: 2025-10-28  
-**作者**: AI Assistant
-
-🌟 **Star this project if you find it useful!**
+**Version**: 3.0  
+**Last Updated**: October 2025
