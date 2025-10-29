@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import { creditApi, api, CreditBalance, UserWithLimit } from '../api';
 
+// Use full URL for production to bypass proxy issues
+const API_BASE = import.meta.env.VITE_API_BASE || 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? `http://${window.location.hostname}:8000/api`
+    : '/api');
+
 export default function AdminCreditPanel() {
   const [users, setUsers] = useState<UserWithLimit[]>([]);
   const [userCredits, setUserCredits] = useState<Map<string, CreditBalance>>(new Map());
@@ -42,7 +48,7 @@ export default function AdminCreditPanel() {
       for (const userInfo of usersData) {
         try {
           // Try to get balance via admin endpoint (if exists) or regular endpoint
-          const response = await fetch(`/api/credits/balance/${userInfo.user.id}`, {
+          const response = await fetch(`${API_BASE}/credits/balance/${userInfo.user.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           
