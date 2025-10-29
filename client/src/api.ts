@@ -180,9 +180,14 @@ export const aiApi = {
             
             try {
               const parsed = JSON.parse(data);
-              if (parsed.response) {
-                fullText += parsed.response;
-                onChunk(parsed.response);
+              // Backend returns "token" field for each chunk
+              if (parsed.token) {
+                fullText += parsed.token;
+                onChunk(parsed.token);
+              }
+              // Also handle "done" event with full response
+              if (parsed.done && parsed.tokens?.response) {
+                fullText = parsed.tokens.response;
               }
             } catch (e) {
               // Skip invalid JSON
