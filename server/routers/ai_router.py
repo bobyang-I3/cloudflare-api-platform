@@ -1,5 +1,5 @@
 """
-AI/Chat routes - Cloudflare API proxy (SIMPLIFIED VERSION)
+AI/Chat routes - Cloudflare API proxy with Credit billing
 """
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -15,6 +15,7 @@ from cloudflare_client_simple import (
     get_model_by_id
 )
 from check_limits import check_user_limits
+from credit_service import CreditService
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
@@ -87,6 +88,23 @@ async def chat(
         )
         db.add(usage_log)
         db.commit()
+        db.refresh(usage_log)
+        
+        # Charge credits
+        try:
+            credit_transaction = CreditService.calculate_and_charge(
+                user_id=current_user.id,
+                model_id=request.model,
+                input_tokens=result["input_tokens"],
+                output_tokens=result["output_tokens"],
+                has_image=has_image,
+                usage_log_id=usage_log.id,
+                db=db
+            )
+        except HTTPException as e:
+            # If credit charge fails, return the error
+            # Usage is still logged but not charged
+            raise e
         
         # Return response
         return ChatResponse(
@@ -161,7 +179,7 @@ async def chat_stream(
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
         finally:
-            # Log usage
+            # Log usage and charge credits
             if full_response_content:
                 usage_log = UsageLog(
                     user_id=current_user.id,
@@ -177,6 +195,22 @@ async def chat_stream(
                 )
                 db.add(usage_log)
                 db.commit()
+                db.refresh(usage_log)
+                
+                # Charge credits
+                try:
+                    CreditService.calculate_and_charge(
+                        user_id=current_user.id,
+                        model_id=request.model,
+                        input_tokens=input_tokens_count,
+                        output_tokens=output_tokens_count,
+                        has_image=False,
+                        usage_log_id=usage_log.id,
+                        db=db
+                    )
+                except Exception as credit_error:
+                    # Log credit charge failure but don't interrupt the stream
+                    print(f"⚠️ Credit charge failed: {credit_error}")
     
     return StreamingResponse(
         event_generator(),

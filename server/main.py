@@ -5,13 +5,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from database import init_db
-from routers import auth_router, ai_router, usage_router, admin_router
+from routers import auth_router, ai_router, usage_router, admin_router, credit_router
 
 # Create FastAPI app
 app = FastAPI(
     title="Cloudflare API Billing Platform",
-    description="API management platform with usage tracking for Cloudflare Workers AI",
-    version="1.0.0"
+    description="API management platform with Credit-based billing for Cloudflare Workers AI",
+    version="2.0.0"
 )
 
 # Configure CORS
@@ -27,6 +27,7 @@ app.add_middleware(
 app.include_router(auth_router.router, prefix=settings.api_v1_prefix)
 app.include_router(ai_router.router, prefix=settings.api_v1_prefix)
 app.include_router(usage_router.router, prefix=settings.api_v1_prefix)
+app.include_router(credit_router.router, prefix=settings.api_v1_prefix)
 app.include_router(admin_router.router)
 
 

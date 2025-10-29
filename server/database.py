@@ -36,6 +36,7 @@ def init_db():
     Initialize database (create all tables)
     """
     from models import User, UserLimit, UsageLog  # Import models to register them
+    from models_credit import UserCredit, CreditTransaction, ModelPricing  # Import credit models
     Base.metadata.create_all(bind=engine)
     print("✅ Database initialized successfully")
 
