@@ -77,6 +77,12 @@ OFFICIAL_MODEL_PRICING = [
     # We'll set a flat rate for image generation
     {"id": "@cf/black-forest-labs/flux-1-schnell", "name": "FLUX.1 Schnell", "provider": "Black Forest Labs",
      "input_price": 5.28, "output_price": 5.28},  # $0.0000528 per tile * 100,000 = $5.28 per M "tokens" equivalent
+    
+    # ========== AUDIO MODELS ==========
+    # Note: Audio models are priced per audio minute
+    # Approximation: 1 minute audio ≈ 150 words ≈ 200 tokens for billing purposes
+    {"id": "@cf/openai/whisper-large-v3-turbo", "name": "Whisper Large V3 Turbo", "provider": "OpenAI",
+     "input_price": 2.55, "output_price": 0.0},  # $0.00051 per minute * 1000 minutes = $0.51, converted to per-M-token equivalent
 ]
 
 
