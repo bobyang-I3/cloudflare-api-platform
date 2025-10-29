@@ -10,13 +10,12 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState<string>('');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
 
   // Check if recording is supported (requires HTTPS or localhost)
-  const isRecordingSupported = navigator.mediaDevices && navigator.mediaDevices.getUserMedia && 
+  const isRecordingSupported = Boolean(navigator.mediaDevices?.getUserMedia) && 
     (window.location.protocol === 'https:' || window.location.hostname === 'localhost');
 
   useEffect(() => {
@@ -153,19 +152,6 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
           </button>
         )}
       </div>
-
-      {/* Error Message */}
-      {error && (
-        <div style={{
-          background: 'rgba(239, 68, 68, 0.9)',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '16px',
-          fontSize: '14px'
-        }}>
-          ⚠️ {error}
-        </div>
-      )}
 
       {/* HTTPS Warning */}
       {!isRecordingSupported && (
