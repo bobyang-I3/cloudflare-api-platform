@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     
     # API
     api_v1_prefix: str = "/api"
-    cors_origins: str = '["http://localhost:5173","http://localhost:3000","http://172.26.39.223:5173","http://172.26.39.223:3000"]'
+    cors_origins: str = '["http://localhost:5173","http://localhost:3000","http://172.26.39.223:5173","http://172.26.39.223:3000","http://104.154.208.245:5173","http://104.154.208.245:8000"]'
     
     # Server
     host: str = "0.0.0.0"

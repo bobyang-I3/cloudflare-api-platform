@@ -2,7 +2,11 @@
  * API service layer
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+// Use full URL for production to bypass proxy issues
+const API_BASE = import.meta.env.VITE_API_BASE || 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? `http://${window.location.hostname}:8000/api`
+    : '/api');
 
 interface ApiError {
   detail: string;
