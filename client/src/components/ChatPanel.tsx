@@ -88,22 +88,17 @@ export default function ChatPanel({
     // Save image reference before clearing
     const imageToSend = uploadedImage;
     
-    // Add user message to UI
+    // Add user message and empty assistant message to UI
     isInternalUpdate.current = true;
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setError('');
-    setLoading(true);
-
-    // Add empty assistant message for streaming
-    const assistantMessageIndex = messages.length + 1;
     const tempAssistantMessage: MessageWithMetadata = {
       role: 'assistant',
       content: ''
     };
     
-    isInternalUpdate.current = true;
-    setMessages(prev => [...prev, tempAssistantMessage]);
+    setMessages(prev => [...prev, userMessage, tempAssistantMessage]);
+    setInput('');
+    setError('');
+    setLoading(true);
 
     try {
       await aiApi.chatStream(
@@ -116,9 +111,10 @@ export default function ChatPanel({
         (chunk: string) => {
           setMessages(prev => {
             const newMessages = [...prev];
-            newMessages[assistantMessageIndex] = {
-              ...newMessages[assistantMessageIndex],
-              content: newMessages[assistantMessageIndex].content + chunk
+            const lastIndex = newMessages.length - 1;
+            newMessages[lastIndex] = {
+              ...newMessages[lastIndex],
+              content: newMessages[lastIndex].content + chunk
             };
             return newMessages;
           });
