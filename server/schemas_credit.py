@@ -24,6 +24,23 @@ class CreditDepositRequest(BaseModel):
     description: Optional[str] = Field(None, description="Optional description for the transaction")
 
 
+class CreditTransferRequest(BaseModel):
+    """Request to transfer credits to another user"""
+    to_username: str = Field(..., description="Recipient username")
+    amount: float = Field(..., gt=0, description="Amount of credits to transfer (must be positive)")
+    description: Optional[str] = Field(None, description="Optional description for the transfer")
+
+
+class UserSearchResult(BaseModel):
+    """User search result"""
+    id: str
+    username: str
+    email: str
+    
+    class Config:
+        from_attributes = True
+
+
 class CreditTransactionResponse(BaseModel):
     """Credit transaction record"""
     id: str

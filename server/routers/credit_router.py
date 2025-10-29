@@ -10,7 +10,7 @@ from models import User
 from models_credit import UserCredit, CreditTransaction, ModelPricing
 from schemas_credit import (
     CreditBalanceResponse, CreditDepositRequest, CreditTransactionResponse,
-    ModelPricingResponse, CreditStatsResponse
+    ModelPricingResponse, CreditStatsResponse, CreditTransferRequest, UserSearchResult
 )
 from auth import get_current_user_from_token, get_current_user_from_api_key
 from credit_service import CreditService
@@ -143,4 +143,47 @@ def get_credit_stats(
         total_consumed_all_time=round(total_consumed, 2),
         total_transactions=total_transactions
     )
+
+
+@router.post("/transfer", response_model=List[CreditTransactionResponse])
+def transfer_credits(
+    request: CreditTransferRequest,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """Transfer credits to another user"""
+    # Find recipient by username
+    recipient = db.query(User).filter(User.username == request.to_username).first()
+    if not recipient:
+        raise HTTPException(status_code=404, detail=f"User '{request.to_username}' not found")
+    
+    # Transfer credits
+    sender_tx, receiver_tx = CreditService.transfer(
+        from_user_id=current_user.id,
+        to_user_id=recipient.id,
+        amount=request.amount,
+        description=request.description,
+        db=db
+    )
+    
+    return [sender_tx, receiver_tx]
+
+
+@router.get("/search-users", response_model=List[UserSearchResult])
+def search_users(
+    query: str,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """Search users by username or email (for transfer)"""
+    if len(query) < 2:
+        return []
+    
+    users = db.query(User).filter(
+        (User.username.contains(query)) | (User.email.contains(query)),
+        User.id != current_user.id,  # Exclude self
+        User.is_active == True
+    ).limit(10).all()
+    
+    return users
 

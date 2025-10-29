@@ -160,6 +160,64 @@ class CreditService:
         )
     
     @staticmethod
+    def transfer(
+        from_user_id: str,
+        to_user_id: str,
+        amount: float,
+        description: Optional[str],
+        db: Session
+    ) -> tuple[CreditTransaction, CreditTransaction]:
+        """
+        Transfer credits from one user to another
+        
+        Returns:
+            Tuple of (sender_transaction, receiver_transaction)
+        """
+        if amount <= 0:
+            raise ValueError("Transfer amount must be positive")
+        
+        if from_user_id == to_user_id:
+            raise ValueError("Cannot transfer to yourself")
+        
+        # Verify recipient exists
+        from models import User
+        recipient = db.query(User).filter(User.id == to_user_id).first()
+        if not recipient:
+            raise HTTPException(status_code=404, detail="Recipient user not found")
+        
+        # Check sender has sufficient balance
+        if not CreditService.check_sufficient_balance(from_user_id, amount, db):
+            balance = CreditService.get_balance(from_user_id, db)
+            raise HTTPException(
+                status_code=402,
+                detail=f"Insufficient credits. Balance: {balance:.4f}, Required: {amount:.4f}"
+            )
+        
+        # Deduct from sender
+        sender_tx = CreditService.add_transaction(
+            user_id=from_user_id,
+            type=TransactionType.CONSUMPTION,
+            amount=-amount,
+            description=description or f"Transfer to {recipient.username}",
+            reference_id=to_user_id,
+            db=db
+        )
+        
+        # Add to receiver
+        from models import User
+        sender = db.query(User).filter(User.id == from_user_id).first()
+        receiver_tx = CreditService.add_transaction(
+            user_id=to_user_id,
+            type=TransactionType.BONUS,
+            amount=amount,
+            description=description or f"Transfer from {sender.username if sender else 'Unknown'}",
+            reference_id=from_user_id,
+            db=db
+        )
+        
+        return (sender_tx, receiver_tx)
+    
+    @staticmethod
     def get_transactions(
         user_id: str,
         db: Session,
