@@ -6,6 +6,7 @@ import ApiKeyPanel from '../components/ApiKeyPanel';
 import AdminPanel from '../components/AdminPanel';
 import CreditPanel from '../components/CreditPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
+import ThemeToggle from '../components/ThemeToggle';
 import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign } from 'lucide-react';
 
 interface DashboardProps {
@@ -237,6 +238,15 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
                 <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>tokens</span>
               </div>
             )}
+            <div style={{
+              background: 'rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '10px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.3)'
+            }}>
+              <ThemeToggle />
+            </div>
             <button
               onClick={onLogout}
               style={{
