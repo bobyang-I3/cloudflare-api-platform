@@ -12,10 +12,15 @@ from config import settings
 # Verified working models - tested and confirmed available
 AVAILABLE_MODELS = [
     # Text Generation - Core Models (Verified Working)
+    {"id": "@cf/openai/gpt-oss-120b", "name": "GPT OSS 120B", "provider": "OpenAI", "task": "text-generation", "description": "OpenAI's open-weight model for powerful reasoning and agentic tasks", "capabilities": ["batch"], "status": "active"},
+    {"id": "@cf/openai/gpt-oss-20b", "name": "GPT OSS 20B", "provider": "OpenAI", "task": "text-generation", "description": "Lower latency model for local or specialized use-cases", "capabilities": [], "status": "active"},
     {"id": "@cf/meta/llama-3.1-8b-instruct", "name": "Llama 3.1 8B Instruct", "provider": "Meta", "task": "text-generation", "description": "Fast and reliable, multilingual dialogue", "capabilities": [], "status": "active"},
     {"id": "@cf/meta/llama-3-8b-instruct", "name": "Llama 3 8B Instruct", "provider": "Meta", "task": "text-generation", "description": "Stable version, good for general use", "capabilities": [], "status": "active"},
     {"id": "@cf/meta/llama-2-7b-chat-fp16", "name": "Llama 2 7B Chat FP16", "provider": "Meta", "task": "text-generation", "description": "Stable, widely compatible", "capabilities": [], "status": "active"},
     {"id": "@cf/mistral/mistral-7b-instruct-v0.1", "name": "Mistral 7B Instruct", "provider": "MistralAI", "task": "text-generation", "description": "High quality, good for complex tasks", "capabilities": [], "status": "active"},
+    
+    # Automatic Speech Recognition
+    {"id": "@cf/openai/whisper-large-v3-turbo", "name": "Whisper Large V3 Turbo", "provider": "OpenAI", "task": "automatic-speech-recognition", "description": "High-quality speech recognition and translation", "capabilities": [], "status": "active"},
     
     # Image-to-Text - Vision Models
     {"id": "@cf/unum/uform-gen2-qwen-500m", "name": "UForm-Gen2 Qwen 500M", "provider": "Unum", "task": "image-to-text", "description": "Small and fast model for image captioning and visual Q&A", "capabilities": ["vision"], "status": "beta"},
