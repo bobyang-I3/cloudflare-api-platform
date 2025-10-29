@@ -1,18 +1,20 @@
 """
 Authentication routes
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 from schemas import UserRegister, UserLogin, Token, UserResponse
 from auth import hash_password, authenticate_user, create_access_token, get_current_user_from_token
+from rate_limit import limiter, get_rate_limit
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(user_data: UserRegister, db: Session = Depends(get_db)):
+@limiter.limit(get_rate_limit("strict"))
+def register(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):
     """
     Register a new user
     """
@@ -46,7 +48,8 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-def login(credentials: UserLogin, db: Session = Depends(get_db)):
+@limiter.limit(get_rate_limit("normal"))
+def login(request: Request, credentials: UserLogin, db: Session = Depends(get_db)):
     """
     Login and get access token
     """
@@ -66,7 +69,8 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserResponse)
-def get_current_user(current_user: User = Depends(get_current_user_from_token)):
+@limiter.limit(get_rate_limit("generous"))
+def get_current_user(request: Request, current_user: User = Depends(get_current_user_from_token)):
     """
     Get current user information
     """
