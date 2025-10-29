@@ -4,8 +4,9 @@ import ChatPanel from '../components/ChatPanel';
 import UsagePanel from '../components/UsagePanel';
 import ApiKeyPanel from '../components/ApiKeyPanel';
 import AdminPanel from '../components/AdminPanel';
+import CreditPanel from '../components/CreditPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap } from 'lucide-react';
+import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign } from 'lucide-react';
 
 interface DashboardProps {
   token: string;
@@ -13,7 +14,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type Tab = 'chat' | 'usage' | 'apikey' | 'admin';
+type Tab = 'chat' | 'usage' | 'credits' | 'apikey' | 'admin';
 
 export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -281,6 +282,7 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
           {[
             { id: 'chat', icon: MessageSquare, label: 'Chat', tab: 'chat' },
             { id: 'usage', icon: BarChart3, label: 'Usage', tab: 'usage' },
+            { id: 'credits', icon: DollarSign, label: 'Credits', tab: 'credits' },
             { id: 'apikey', icon: Key, label: 'API Key', tab: 'apikey' },
             ...(user.is_admin ? [{ id: 'admin', icon: Settings, label: 'Admin', tab: 'admin' }] : []),
           ].map(({ id, icon: Icon, label, tab }) => (
@@ -352,6 +354,9 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
           <div className="container" style={{ paddingTop: '24px', width: '100%' }}>
             {activeTab === 'usage' && (
               <UsagePanel token={token} />
+            )}
+            {activeTab === 'credits' && (
+              <CreditPanel token={token} isAdmin={user.is_admin || false} />
             )}
             {activeTab === 'apikey' && (
               <ApiKeyPanel user={user} token={token} />

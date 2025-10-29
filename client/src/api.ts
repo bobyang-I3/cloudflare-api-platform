@@ -220,6 +220,78 @@ export interface UpdateUserLimitRequest {
   is_limited: boolean;
 }
 
+// ============= Credit API =============
+
+export interface CreditBalance {
+  user_id: string;
+  balance: number;
+  total_deposited: number;
+  total_consumed: number;
+}
+
+export interface CreditTransaction {
+  id: string;
+  user_id: string;
+  type: string; // 'deposit' | 'consumption' | 'refund' | 'bonus' | 'admin_adjustment'
+  amount: number;
+  balance_before: number;
+  balance_after: number;
+  description: string | null;
+  reference_id: string | null;
+  created_at: string;
+}
+
+export interface ModelPricing {
+  id: string;
+  model_id: string;
+  model_name: string;
+  provider: string;
+  tier: string; // 'tiny' | 'small' | 'medium' | 'large'
+  credits_per_1k_input: number;
+  credits_per_1k_output: number;
+  vision_surcharge: number;
+  is_active: boolean;
+}
+
+export interface CreditDepositRequest {
+  user_id: string;
+  amount: number;
+  description?: string;
+}
+
+export const creditApi = {
+  getBalance: async (token: string): Promise<CreditBalance> => {
+    const response = await fetch(`${API_BASE}/credits/balance`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<CreditBalance>(response);
+  },
+
+  getTransactions: async (token: string, limit: number = 50, offset: number = 0): Promise<CreditTransaction[]> => {
+    const response = await fetch(`${API_BASE}/credits/transactions?limit=${limit}&offset=${offset}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<CreditTransaction[]>(response);
+  },
+
+  getPricing: async (): Promise<ModelPricing[]> => {
+    const response = await fetch(`${API_BASE}/credits/pricing`);
+    return handleResponse<ModelPricing[]>(response);
+  },
+
+  deposit: async (token: string, data: CreditDepositRequest): Promise<CreditTransaction> => {
+    const response = await fetch(`${API_BASE}/credits/deposit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse<CreditTransaction>(response);
+  },
+};
+
 // Combined API object for convenience
 export const api = {
   // Admin endpoints
