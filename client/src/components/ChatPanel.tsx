@@ -81,6 +81,8 @@ export default function ChatPanel({
     const currentModel = models.find(m => m.id === selectedModel);
     const isASRModel = currentModel?.task === 'automatic-speech-recognition';
     
+    console.log('[handleSend] isASRModel:', isASRModel, 'uploadedAudio:', uploadedAudio);
+    
     if (isASRModel && !uploadedAudio) {
       setError('Please record or upload an audio file for speech recognition');
       return;
@@ -101,11 +103,18 @@ export default function ChatPanel({
     // Add audio data if uploaded (for ASR models)
     if (uploadedAudio) {
       userMessage.audio = uploadedAudio.data;
+      console.log('[handleSend] Adding audio to message, size:', uploadedAudio.data.length);
     }
 
     // Save references before clearing
     const imageToSend = uploadedImage;
     const audioToSend = uploadedAudio;
+    
+    console.log('[handleSend] Sending message:', { 
+      hasAudio: !!userMessage.audio, 
+      model: selectedModel,
+      messagesCount: messages.length + 1
+    });
     
     // Add user message to UI
     isInternalUpdate.current = true;

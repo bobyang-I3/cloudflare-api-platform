@@ -80,7 +80,33 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   useEffect(() => {
     const userConvKey = `conversations_${user.id}`;
     if (conversations.length > 0) {
-      localStorage.setItem(userConvKey, JSON.stringify(conversations));
+      try {
+        // Limit to 50 most recent conversations to prevent storage overflow
+        const limitedConversations = conversations
+          .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+          .slice(0, 50);
+        
+        localStorage.setItem(userConvKey, JSON.stringify(limitedConversations));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+          console.warn('LocalStorage quota exceeded. Clearing old conversations...');
+          // Keep only the 10 most recent conversations
+          const recentConversations = conversations
+            .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+            .slice(0, 10);
+          
+          try {
+            localStorage.setItem(userConvKey, JSON.stringify(recentConversations));
+            setConversations(recentConversations);
+          } catch (e) {
+            // If still failing, clear all and start fresh
+            console.error('Unable to save conversations. Clearing storage.');
+            localStorage.removeItem(userConvKey);
+          }
+        } else {
+          console.error('Failed to save conversations:', error);
+        }
+      }
     } else {
       // Clear if no conversations
       localStorage.removeItem(userConvKey);
