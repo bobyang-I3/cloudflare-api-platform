@@ -79,7 +79,7 @@ def get_my_transactions(
     db: Session = Depends(get_db)
 ):
     """Get current user's credit transaction history"""
-    transactions = CreditService.get_transactions(current_user.id, limit, offset, db)
+    transactions = CreditService.get_transactions(current_user.id, db, limit, offset)
     return transactions
 
 
@@ -95,7 +95,7 @@ def get_user_transactions(
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    transactions = CreditService.get_transactions(user_id, limit, offset, db)
+    transactions = CreditService.get_transactions(user_id, db, limit, offset)
     return transactions
 
 

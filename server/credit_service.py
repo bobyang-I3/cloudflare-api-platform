@@ -162,9 +162,9 @@ class CreditService:
     @staticmethod
     def get_transactions(
         user_id: str,
+        db: Session,
         limit: int = 100,
-        offset: int = 0,
-        db: Session
+        offset: int = 0
     ) -> List[CreditTransaction]:
         """Get user's transaction history"""
         return db.query(CreditTransaction)\
