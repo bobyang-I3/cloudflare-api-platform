@@ -3,7 +3,7 @@ Usage tracking and statistics routes
 """
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, cast, Date
 from typing import List
 from datetime import datetime, timedelta
 from database import get_db
@@ -110,8 +110,9 @@ def get_daily_usage_chart(
     start_date = datetime.utcnow() - timedelta(days=days)
     
     # Query usage logs grouped by date
+    # Use cast() for cross-database compatibility (SQLite and PostgreSQL)
     daily_data = db.query(
-        func.strftime('%Y-%m-%d', UsageLog.timestamp).label('date'),
+        cast(UsageLog.timestamp, Date).label('date'),
         func.count(UsageLog.id).label('requests'),
         func.sum(UsageLog.total_tokens).label('tokens'),
         func.sum(UsageLog.input_tokens).label('input_tokens'),
@@ -120,21 +121,21 @@ def get_daily_usage_chart(
         UsageLog.user_id == current_user.id,
         UsageLog.timestamp >= start_date
     ).group_by(
-        func.strftime('%Y-%m-%d', UsageLog.timestamp)
+        cast(UsageLog.timestamp, Date)
     ).order_by(
-        func.strftime('%Y-%m-%d', UsageLog.timestamp)
+        cast(UsageLog.timestamp, Date)
     ).all()
     
     # Query credit consumption by date
     daily_cost = db.query(
-        func.strftime('%Y-%m-%d', CreditTransaction.created_at).label('date'),
+        cast(CreditTransaction.created_at, Date).label('date'),
         func.sum(CreditTransaction.amount).label('cost')
     ).filter(
         CreditTransaction.user_id == current_user.id,
         CreditTransaction.type == TransactionType.CONSUMPTION,
         CreditTransaction.created_at >= start_date
     ).group_by(
-        func.strftime('%Y-%m-%d', CreditTransaction.created_at)
+        cast(CreditTransaction.created_at, Date)
     ).all()
     
     # Create a dictionary for easy lookup
