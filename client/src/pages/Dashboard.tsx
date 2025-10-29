@@ -191,11 +191,11 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f9fafb' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-secondary)' }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+        background: 'var(--bg-gradient)',
+        boxShadow: 'var(--shadow-lg)',
         zIndex: 100
       }}>
         <div style={{
@@ -281,7 +281,7 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
 
         {/* Tabs */}
         <div style={{
-          background: 'rgba(0,0,0,0.05)',
+          background: 'var(--bg-tertiary)',
           display: 'flex',
           gap: '8px',
           paddingLeft: '32px',
@@ -302,10 +302,10 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
               style={{
                 padding: '14px 24px',
                 border: 'none',
-                background: activeTab === tab ? 'rgba(255,255,255,0.95)' : 'transparent',
+                background: activeTab === tab ? 'var(--bg-primary)' : 'transparent',
                 cursor: 'pointer',
                 borderRadius: activeTab === tab ? '12px 12px 0 0' : '0',
-                color: activeTab === tab ? '#667eea' : 'rgba(255,255,255,0.85)',
+                color: activeTab === tab ? 'var(--accent-primary)' : 'rgba(255,255,255,0.85)',
                 fontWeight: activeTab === tab ? '600' : '500',
                 transition: 'all 0.2s',
                 display: 'flex',

@@ -30,9 +30,9 @@ export default function ThemeToggle() {
       }}
     >
       {effectiveTheme === 'light' ? (
-        <Moon size={20} />
+        <Moon size={16} />
       ) : (
-        <Sun size={20} />
+        <Sun size={16} />
       )}
     </button>
   );

@@ -19,6 +19,28 @@ from credit_service import CreditService
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
+# Context window limits for different models
+MAX_CONTEXT_MESSAGES = 20  # Maximum number of messages to keep in context
+
+
+def trim_messages(messages: list, max_messages: int = MAX_CONTEXT_MESSAGES) -> list:
+    """
+    Trim messages to keep only the most recent ones to avoid token limit errors
+    Always keep system messages
+    """
+    if len(messages) <= max_messages:
+        return messages
+    
+    # Separate system messages from others
+    system_messages = [msg for msg in messages if msg.get("role") == "system"]
+    other_messages = [msg for msg in messages if msg.get("role") != "system"]
+    
+    # Keep most recent messages
+    if len(other_messages) > max_messages - len(system_messages):
+        other_messages = other_messages[-(max_messages - len(system_messages)):]
+    
+    return system_messages + other_messages
+
 
 @router.get("/models", response_model=List[ModelInfo])
 def list_models():
@@ -46,6 +68,9 @@ async def chat(
         if hasattr(msg, 'image') and msg.image:
             message_dict["image"] = msg.image
         messages.append(message_dict)
+    
+    # Trim messages to avoid token limit errors
+    messages = trim_messages(messages)
     
     try:
         # Check user limits BEFORE making API call
@@ -135,6 +160,9 @@ async def chat_stream(
     check_user_limits(current_user, db, estimated_tokens=request.max_tokens or 512)
     
     messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+    
+    # Trim messages to avoid token limit errors
+    messages = trim_messages(messages)
     
     # Get model info
     model_info = get_model_by_id(request.model)

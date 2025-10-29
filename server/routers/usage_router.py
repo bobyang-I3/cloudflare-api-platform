@@ -111,7 +111,7 @@ def get_daily_usage_chart(
     
     # Query usage logs grouped by date
     daily_data = db.query(
-        func.date(UsageLog.timestamp).label('date'),
+        func.strftime('%Y-%m-%d', UsageLog.timestamp).label('date'),
         func.count(UsageLog.id).label('requests'),
         func.sum(UsageLog.total_tokens).label('tokens'),
         func.sum(UsageLog.input_tokens).label('input_tokens'),
@@ -120,21 +120,21 @@ def get_daily_usage_chart(
         UsageLog.user_id == current_user.id,
         UsageLog.timestamp >= start_date
     ).group_by(
-        func.date(UsageLog.timestamp)
+        func.strftime('%Y-%m-%d', UsageLog.timestamp)
     ).order_by(
-        func.date(UsageLog.timestamp)
+        func.strftime('%Y-%m-%d', UsageLog.timestamp)
     ).all()
     
     # Query credit consumption by date
     daily_cost = db.query(
-        func.date(CreditTransaction.created_at).label('date'),
+        func.strftime('%Y-%m-%d', CreditTransaction.created_at).label('date'),
         func.sum(CreditTransaction.amount).label('cost')
     ).filter(
         CreditTransaction.user_id == current_user.id,
         CreditTransaction.type == TransactionType.CONSUMPTION,
         CreditTransaction.created_at >= start_date
     ).group_by(
-        func.date(CreditTransaction.created_at)
+        func.strftime('%Y-%m-%d', CreditTransaction.created_at)
     ).all()
     
     # Create a dictionary for easy lookup
