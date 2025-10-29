@@ -6,7 +6,6 @@ import ApiKeyPanel from '../components/ApiKeyPanel';
 import AdminPanel from '../components/AdminPanel';
 import CreditPanel from '../components/CreditPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import ThemeToggle from '../components/ThemeToggle';
 import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign } from 'lucide-react';
 
 interface DashboardProps {
@@ -191,11 +190,11 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-secondary)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f9fafb' }}>
       {/* Header */}
       <div style={{
-        background: 'var(--bg-gradient)',
-        boxShadow: 'var(--shadow-lg)',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
         zIndex: 100
       }}>
         <div style={{
@@ -238,15 +237,6 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
                 <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>tokens</span>
               </div>
             )}
-            <div style={{
-              background: 'rgba(255,255,255,0.2)',
-              backdropFilter: 'blur(10px)',
-              padding: '10px',
-              borderRadius: '12px',
-              border: '1px solid rgba(255,255,255,0.3)'
-            }}>
-              <ThemeToggle />
-            </div>
             <button
               onClick={onLogout}
               style={{
@@ -281,7 +271,7 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
 
         {/* Tabs */}
         <div style={{
-          background: 'var(--bg-tertiary)',
+          background: 'rgba(0,0,0,0.05)',
           display: 'flex',
           gap: '8px',
           paddingLeft: '32px',
@@ -302,10 +292,10 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
               style={{
                 padding: '14px 24px',
                 border: 'none',
-                background: activeTab === tab ? 'var(--bg-primary)' : 'transparent',
+                background: activeTab === tab ? 'rgba(255,255,255,0.95)' : 'transparent',
                 cursor: 'pointer',
                 borderRadius: activeTab === tab ? '12px 12px 0 0' : '0',
-                color: activeTab === tab ? 'var(--accent-primary)' : 'rgba(255,255,255,0.85)',
+                color: activeTab === tab ? '#667eea' : 'rgba(255,255,255,0.85)',
                 fontWeight: activeTab === tab ? '600' : '500',
                 transition: 'all 0.2s',
                 display: 'flex',

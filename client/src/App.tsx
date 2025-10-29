@@ -3,7 +3,6 @@ import { authApi, User } from './api';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
-import { ThemeProvider } from './contexts/ThemeContext';
 
 type Page = 'login' | 'register' | 'dashboard';
 
@@ -64,33 +63,33 @@ export default function App() {
     setPage('login');
   };
 
-  return (
-    <ThemeProvider>
-      {loading && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          color: 'white',
-          fontSize: '18px'
-        }}>
-          Loading...
-        </div>
-      )}
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        color: 'white',
+        fontSize: '18px'
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
-      {!loading && page === 'login' && (
-        <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setPage('register')} />
-      )}
+  if (page === 'login') {
+    return <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setPage('register')} />;
+  }
 
-      {!loading && page === 'register' && (
-        <RegisterPage onRegister={handleRegister} onSwitchToLogin={() => setPage('login')} />
-      )}
+  if (page === 'register') {
+    return <RegisterPage onRegister={handleRegister} onSwitchToLogin={() => setPage('login')} />;
+  }
 
-      {!loading && page === 'dashboard' && token && user && (
-        <Dashboard token={token} user={user} onLogout={handleLogout} />
-      )}
-    </ThemeProvider>
-  );
+  if (page === 'dashboard' && token && user) {
+    return <Dashboard token={token} user={user} onLogout={handleLogout} />;
+  }
+
+  return null;
 }
 
