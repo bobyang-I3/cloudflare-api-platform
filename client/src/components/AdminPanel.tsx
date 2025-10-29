@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api, UserWithLimit, PlatformStats } from '../api';
+import AdminCreditPanel from './AdminCreditPanel';
+
+type AdminTab = 'users' | 'credits';
 
 export default function AdminPanel() {
+  const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const [users, setUsers] = useState<UserWithLimit[]>([]);
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserWithLimit | null>(null);
@@ -104,7 +108,7 @@ export default function AdminPanel() {
   return (
     <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: '32px' }}>
+      <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' }}>
           🔧 Admin Dashboard
         </h1>
@@ -113,20 +117,66 @@ export default function AdminPanel() {
         </p>
       </div>
 
-      {error && (
-        <div style={{
-          background: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '24px',
-          color: '#991b1b'
-        }}>
-          {error}
+      {/* Tabs */}
+      <div style={{ marginBottom: '32px', borderBottom: '2px solid #e5e7eb' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={() => setActiveTab('users')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'users' ? '#3b82f6' : 'transparent',
+              color: activeTab === 'users' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              marginBottom: '-2px',
+              borderBottom: activeTab === 'users' ? '2px solid #3b82f6' : 'none'
+            }}
+          >
+            👥 Users
+          </button>
+          <button
+            onClick={() => setActiveTab('credits')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'credits' ? '#10b981' : 'transparent',
+              color: activeTab === 'credits' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              marginBottom: '-2px',
+              borderBottom: activeTab === 'credits' ? '2px solid #10b981' : 'none'
+            }}
+          >
+            💰 Credits
+          </button>
         </div>
-      )}
+      </div>
 
-      {/* Platform Statistics */}
+      {/* Credits Tab */}
+      {activeTab === 'credits' && <AdminCreditPanel />}
+
+      {/* Users Tab */}
+      {activeTab === 'users' && (
+        <>
+          {error && (
+            <div style={{
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              marginBottom: '24px',
+              color: '#991b1b'
+            }}>
+              {error}
+            </div>
+          )}
+
+          {/* Platform Statistics */}
       {stats && (
         <div style={{
           display: 'grid',
@@ -430,6 +480,8 @@ export default function AdminPanel() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );
