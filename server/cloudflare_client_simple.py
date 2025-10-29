@@ -86,7 +86,11 @@ async def call_cloudflare_ai(
         raise ValueError(f"Model '{model}' not found in available models. Please select from the available list.")
     
     # Build API URL
-    url = f"{settings.cloudflare_api_base}/accounts/{settings.cloudflare_account_id}/ai/run/{model}"
+    # GPT OSS models use Responses API endpoint
+    if "gpt-oss" in model:
+        url = f"{settings.cloudflare_api_base}/accounts/{settings.cloudflare_account_id}/ai/v1/responses"
+    else:
+        url = f"{settings.cloudflare_api_base}/accounts/{settings.cloudflare_account_id}/ai/run/{model}"
     
     # Prepare request
     headers = {
@@ -94,8 +98,66 @@ async def call_cloudflare_ai(
         "Authorization": f"Bearer {settings.cloudflare_api_key}"
     }
     
+    # Handle GPT OSS models (Responses API)
+    if "gpt-oss" in model:
+        # GPT OSS uses Responses API format with 'input' instead of 'messages'
+        # Extract the last user message as input
+        input_text = ""
+        for msg in reversed(messages):
+            if msg["role"] == "user":
+                input_text = msg["content"]
+                break
+        
+        if not input_text:
+            raise ValueError("Please provide a message for the model.")
+        
+        payload = {
+            "model": model,
+            "input": input_text
+        }
+        
+        input_tokens = estimate_tokens(input_text)
+        
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(url, json=payload, headers=headers)
+                
+                if not response.is_success:
+                    error_text = response.text
+                    if response.status_code == 401:
+                        raise Exception("Invalid API key or Account ID.")
+                    elif response.status_code == 404:
+                        raise Exception(f"Model '{model}' not found.")
+                    elif response.status_code == 429:
+                        raise Exception("Rate limit exceeded. Please wait and try again.")
+                    else:
+                        raise Exception(f"Cloudflare AI API error ({response.status_code}): {error_text}")
+                
+                data = response.json()
+        except httpx.TimeoutException:
+            raise Exception("Request timed out. Please try again.")
+        except httpx.RequestError as e:
+            raise Exception(f"Network error: {str(e)}")
+        
+        # Extract response text
+        response_text = data.get("result", {}).get("response", "")
+        if not response_text:
+            raise Exception("Model returned empty response.")
+        
+        output_tokens = estimate_tokens(response_text)
+        total_tokens = input_tokens + output_tokens
+        response_time_ms = (time.time() - start_time) * 1000
+        
+        return {
+            "response": response_text,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": total_tokens,
+            "response_time_ms": response_time_ms
+        }
+    
     # Handle text-to-image models
-    if model_info["task"] == "text-to-image":
+    elif model_info["task"] == "text-to-image":
         # For image generation, extract prompt from the last message
         prompt = messages[-1]["content"] if messages else ""
         if not prompt:
