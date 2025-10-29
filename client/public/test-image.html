@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像上传测试 - Cloudflare API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; margin-top: 0; }
+        .upload-box {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            margin: 20px 0;
+            background: #fafafa;
+        }
+        .upload-box:hover { background: #f0f0f0; }
+        .preview { max-width: 100%; margin: 20px 0; }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        button:hover { background: #2563eb; }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+        }
+        .error {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+            color: #991b1b;
+        }
+        .log {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 图像上传功能测试</h1>
+        <p>此页面用于测试图像上传到 UForm-Gen2 模型</p>
+        
+        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size: 48px; margin-bottom: 10px;">🖼️</div>
+            <div><strong>点击或拖拽图像到这里</strong></div>
+            <div style="font-size: 12px; color: #666; margin-top: 5px;">支持 JPG, PNG, GIF</div>
+        </div>
+        
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        
+        <img id="preview" class="preview" style="display: none;">
+        
+        <input type="text" id="promptInput" placeholder="输入你的问题，例如：Describe this image" value="What do you see in this image?">
+        
+        <button id="sendBtn" onclick="sendRequest()" disabled>发送请求</button>
+        
+        <div id="result"></div>
+        
+        <div class="log" id="log"></div>
+    </div>
+    
+    <script>
+        let uploadedImage = null;
+        const API_KEY = localStorage.getItem('token') ? 
+            JSON.parse(atob(localStorage.getItem('token').split('.')[1])).api_key : 
+            'cb_ae3f7e0d23f747cd956f30ac5a46bb7d';
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('请上传图像文件！');
+                return;
+            }
+            
+            log(`📁 文件选择: ${file.name} (${(file.size/1024).toFixed(2)} KB)`);
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                document.getElementById('preview').src = uploadedImage;
+                document.getElementById('preview').style.display = 'block';
+                document.getElementById('sendBtn').disabled = false;
+                log(`✅ 图像已加载 (Base64 长度: ${uploadedImage.length})`);
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
+        
+        document.getElementById('uploadBox').addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        });
+        
+        document.getElementById('uploadBox').addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        
+        async function sendRequest() {
+            if (!uploadedImage) {
+                alert('请先上传图像！');
+                return;
+            }
+            
+            const prompt = document.getElementById('promptInput').value;
+            const resultDiv = document.getElementById('result');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            sendBtn.disabled = true;
+            sendBtn.textContent = '发送中...';
+            resultDiv.innerHTML = '';
+            
+            log(`🚀 发送请求到 /api/ai/chat`);
+            log(`📝 Prompt: ${prompt}`);
+            log(`🖼️ 图像大小: ${(uploadedImage.length/1024).toFixed(2)} KB`);
+            
+            const payload = {
+                messages: [{
+                    role: 'user',
+                    content: prompt,
+                    image: uploadedImage
+                }],
+                model: '@cf/unum/uform-gen2-qwen-500m',
+                max_tokens: 150
+            };
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch('http://localhost:8000/api/ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const elapsed = Date.now() - startTime;
+                log(`⏱️ 响应时间: ${(elapsed/1000).toFixed(2)}秒`);
+                log(`📊 HTTP状态: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log(`✅ 收到响应`);
+                log(`🔢 Tokens: input=${data.input_tokens}, output=${data.output_tokens}, total=${data.total_tokens}`);
+                
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>✅ 成功!</h3>
+                        <p><strong>AI回复:</strong></p>
+                        <p>${data.response}</p>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                            模型: ${data.model}<br>
+                            Tokens: ${data.total_tokens} (输入: ${data.input_tokens}, 输出: ${data.output_tokens})<br>
+                            耗时: ${(elapsed/1000).toFixed(2)}秒
+                        </p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                log(`❌ 错误: ${error.message}`);
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ 失败</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '发送请求';
+            }
+        }
+        
+        log('🔧 测试页面已加载');
+        log(`🔑 API Key: ${API_KEY.substring(0, 15)}...`);
+    </script>
+</body>
+</html>
+
