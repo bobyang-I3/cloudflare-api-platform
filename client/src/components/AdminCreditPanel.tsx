@@ -46,7 +46,11 @@ export default function AdminCreditPanel() {
             headers: { Authorization: `Bearer ${token}` },
           });
           
+          console.log(`[AdminCredit] Fetching balance for ${userInfo.user.username} (${userInfo.user.id})`);
+          console.log(`[AdminCredit] Response status: ${response.status}, ok: ${response.ok}`);
+          
           if (!response.ok) {
+            console.warn(`[AdminCredit] Failed to fetch balance for ${userInfo.user.username}: ${response.status}`);
             // User doesn't have credits initialized yet
             creditMap.set(userInfo.user.id, {
               user_id: userInfo.user.id,
@@ -56,9 +60,11 @@ export default function AdminCreditPanel() {
             });
           } else {
             const balance = await response.json();
+            console.log(`[AdminCredit] Balance data for ${userInfo.user.username}:`, balance);
             creditMap.set(userInfo.user.id, balance);
           }
         } catch (err) {
+          console.error(`[AdminCredit] Error fetching balance for ${userInfo.user.username}:`, err);
           // User doesn't have credits initialized
           creditMap.set(userInfo.user.id, {
             user_id: userInfo.user.id,
