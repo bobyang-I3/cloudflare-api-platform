@@ -88,67 +88,40 @@ export default function ChatPanel({
     // Save image reference before clearing
     const imageToSend = uploadedImage;
     
-    // Add user message and empty assistant message to UI
+    // Add user message to UI
     isInternalUpdate.current = true;
-    const tempAssistantMessage: MessageWithMetadata = {
-      role: 'assistant',
-      content: ''
-    };
-    
-    setMessages(prev => [...prev, userMessage, tempAssistantMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setError('');
     setLoading(true);
+    setUploadedImage(null);
 
     try {
-      await aiApi.chatStream(
-        apiKey,
-        {
-          messages: [...messages, userMessage],
-          model: selectedModel
-        },
-        // onChunk: Update message content as chunks arrive
-        (chunk: string) => {
-          setMessages(prev => {
-            const newMessages = [...prev];
-            const lastIndex = newMessages.length - 1;
-            newMessages[lastIndex] = {
-              ...newMessages[lastIndex],
-              content: newMessages[lastIndex].content + chunk
-            };
-            return newMessages;
-          });
-        },
-        // onComplete: Streaming finished
-        (_fullText: string) => {
-          setLoading(false);
-          setUploadedImage(null);
-        },
-        // onError: Handle errors
-        (error: string) => {
-          console.error('Stream error:', error);
-          setError(error);
-          setLoading(false);
-          
-          // Remove both user and assistant messages on error
-          isInternalUpdate.current = true;
-          setMessages(prev => prev.slice(0, -2));
-          
-          // Restore image if failed
-          if (imageToSend) {
-            setUploadedImage(imageToSend);
-          }
-        }
-      );
+      // Use non-streaming chat API for reliability
+      const response = await aiApi.chat(apiKey, {
+        messages: [...messages, userMessage],
+        model: selectedModel
+      });
+      
+      // Add assistant response to UI
+      const assistantMessage: MessageWithMetadata = {
+        role: 'assistant',
+        content: response.response
+      };
+      
+      isInternalUpdate.current = true;
+      setMessages(prev => [...prev, assistantMessage]);
+      setLoading(false);
+      
     } catch (err) {
       console.error('Chat error:', err);
       const errorMsg = err instanceof Error ? err.message : 'Failed to send message. Please try again.';
       setError(errorMsg);
       setLoading(false);
       
-      // Remove both messages on error
+      // Remove user message on error
       isInternalUpdate.current = true;
-      setMessages(prev => prev.slice(0, -2));
+      setMessages(prev => prev.slice(0, -1));
       
       // Restore image if failed
       if (imageToSend) {
