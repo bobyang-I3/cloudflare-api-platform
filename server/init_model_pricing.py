@@ -57,6 +57,20 @@ MODEL_CONFIGS = [
     {"id": "@cf/qwen/qwen2.5-3b-instruct", "name": "Qwen 2.5 3B Instruct", "provider": "Alibaba", "tier": ModelTier.TINY},
     {"id": "@cf/google/gemma-2-2b-it", "name": "Gemma 2 2B IT", "provider": "Google", "tier": ModelTier.TINY},
     {"id": "@cf/tinyllama/tinyllama-1.1b-chat-v1.0", "name": "TinyLlama 1.1B Chat", "provider": "TinyLlama", "tier": ModelTier.TINY},
+    
+    # ========== TEXT-TO-IMAGE MODELS ==========
+    # Text-to-image models charged per image generation (flat rate)
+    {"id": "@cf/black-forest-labs/flux-1-schnell", "name": "FLUX.1 Schnell", "provider": "Black Forest Labs", "tier": ModelTier.MEDIUM},
+    {"id": "@cf/stabilityai/stable-diffusion-xl-base-1.0", "name": "Stable Diffusion XL", "provider": "Stability AI", "tier": ModelTier.MEDIUM},
+    {"id": "@cf/bytedance/stable-diffusion-xl-lightning", "name": "SDXL Lightning", "provider": "ByteDance", "tier": ModelTier.SMALL},
+    
+    # ========== IMAGE-TO-TEXT / VISION MODELS ==========
+    {"id": "@cf/unum/uform-gen2-qwen-500m", "name": "UForm-Gen2 Qwen 500M", "provider": "Unum", "tier": ModelTier.TINY, "vision": 0.05},
+    
+    # ========== OTHER TEXT GENERATION MODELS ==========
+    {"id": "@cf/meta/llama-2-7b-chat-fp16", "name": "Llama 2 7B Chat FP16", "provider": "Meta", "tier": ModelTier.SMALL},
+    {"id": "@cf/meta/llama-2-7b-chat-int8", "name": "Llama 2 7B Chat Int8", "provider": "Meta", "tier": ModelTier.SMALL},
+    {"id": "@cf/mistral/mistral-7b-instruct-v0.1", "name": "Mistral 7B Instruct v0.1", "provider": "Mistral", "tier": ModelTier.SMALL},
 ]
 
 
