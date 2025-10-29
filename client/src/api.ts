@@ -165,18 +165,24 @@ export const aiApi = {
 
       const decoder = new TextDecoder();
       let fullText = '';
+      let buffer = ''; // Buffer for incomplete lines
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
+        buffer += chunk;
+        
+        // Split by newlines but keep the buffer for incomplete lines
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep the last incomplete line in buffer
 
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
+          const trimmedLine = line.trim();
+          if (trimmedLine.startsWith('data: ')) {
+            const data = trimmedLine.slice(6).trim();
+            if (data === '[DONE]' || !data) continue;
             
             try {
               const parsed = JSON.parse(data);
@@ -191,6 +197,7 @@ export const aiApi = {
               }
             } catch (e) {
               // Skip invalid JSON
+              console.warn('Failed to parse SSE data:', data, e);
             }
           }
         }
