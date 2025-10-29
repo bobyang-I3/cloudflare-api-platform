@@ -208,7 +208,12 @@ api-billing-platform/
 │   ├── package.json           # Node dependencies
 │   └── vite.config.ts         # Vite configuration
 │
-└── README.md                   # This file
+├── docs/                        # Documentation
+├── scripts/                     # Deployment and utility scripts
+├── tests/                       # Test files
+├── docker/                      # Docker configuration
+├── LICENSE                      # MIT License
+└── README.md                    # This file
 ```
 
 ## API Documentation
