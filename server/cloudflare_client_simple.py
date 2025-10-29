@@ -139,24 +139,30 @@ async def call_cloudflare_ai(
         except httpx.RequestError as e:
             raise Exception(f"Network error: {str(e)}")
         
-        # Debug: Log the actual response structure
-        print(f"[DEBUG] GPT OSS API Response: {data}")
+        # Extract response from GPT OSS format
+        # Response structure: output[{type: 'message', content: [{type: 'output_text', text: '...'}]}]
+        response_text = ""
+        output_array = data.get("output", [])
         
-        # Extract response text - try multiple possible field names
-        response_text = (
-            data.get("result", {}).get("response") or
-            data.get("result", {}).get("text") or
-            data.get("response") or
-            data.get("text") or
-            ""
-        )
+        # Find the message output
+        for item in output_array:
+            if item.get("type") == "message":
+                content_array = item.get("content", [])
+                for content_item in content_array:
+                    if content_item.get("type") == "output_text":
+                        response_text = content_item.get("text", "")
+                        break
+                if response_text:
+                    break
         
         if not response_text:
-            # Provide more detailed error with actual response structure
             raise Exception(f"Model returned empty response. API response structure: {data}")
         
-        output_tokens = estimate_tokens(response_text)
-        total_tokens = input_tokens + output_tokens
+        # Extract token usage from API response
+        usage = data.get("usage", {})
+        input_tokens = usage.get("prompt_tokens", input_tokens)
+        output_tokens = usage.get("completion_tokens", estimate_tokens(response_text))
+        total_tokens = usage.get("total_tokens", input_tokens + output_tokens)
         response_time_ms = (time.time() - start_time) * 1000
         
         return {
