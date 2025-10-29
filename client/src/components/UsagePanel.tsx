@@ -39,14 +39,14 @@ export default function UsagePanel({ token }: UsagePanelProps) {
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
       {/* Tabs */}
-      <div style={{ marginBottom: '24px', borderBottom: '2px solid var(--border-color)' }}>
+      <div style={{ marginBottom: '24px', borderBottom: '2px solid #e5e7eb' }}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={() => setActiveTab('charts')}
             style={{
               padding: '12px 24px',
-              background: activeTab === 'charts' ? 'var(--accent-primary)' : 'transparent',
-              color: activeTab === 'charts' ? 'white' : 'var(--text-secondary)',
+              background: activeTab === 'charts' ? '#667eea' : 'transparent',
+              color: activeTab === 'charts' ? 'white' : '#6b7280',
               border: 'none',
               borderRadius: '8px 8px 0 0',
               fontSize: '14px',
@@ -56,7 +56,8 @@ export default function UsagePanel({ token }: UsagePanelProps) {
               alignItems: 'center',
               gap: '8px',
               marginBottom: '-2px',
-              borderBottom: activeTab === 'charts' ? '2px solid var(--accent-primary)' : 'none'
+              borderBottom: activeTab === 'charts' ? '2px solid #667eea' : 'none',
+              transition: 'all 0.2s'
             }}
           >
             <BarChart3 size={18} />
@@ -66,8 +67,8 @@ export default function UsagePanel({ token }: UsagePanelProps) {
             onClick={() => setActiveTab('stats')}
             style={{
               padding: '12px 24px',
-              background: activeTab === 'stats' ? 'var(--accent-primary)' : 'transparent',
-              color: activeTab === 'stats' ? 'white' : 'var(--text-secondary)',
+              background: activeTab === 'stats' ? '#667eea' : 'transparent',
+              color: activeTab === 'stats' ? 'white' : '#6b7280',
               border: 'none',
               borderRadius: '8px 8px 0 0',
               fontSize: '14px',
@@ -77,7 +78,8 @@ export default function UsagePanel({ token }: UsagePanelProps) {
               alignItems: 'center',
               gap: '8px',
               marginBottom: '-2px',
-              borderBottom: activeTab === 'stats' ? '2px solid var(--accent-primary)' : 'none'
+              borderBottom: activeTab === 'stats' ? '2px solid #667eea' : 'none',
+              transition: 'all 0.2s'
             }}
           >
             <Table size={18} />
@@ -94,7 +96,7 @@ export default function UsagePanel({ token }: UsagePanelProps) {
       {/* Stats Tab */}
       {activeTab === 'stats' && loading && (
         <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-          <p style={{ color: 'var(--text-secondary)' }}>Loading usage data...</p>
+          <p style={{ color: '#6b7280' }}>Loading usage data...</p>
         </div>
       )}
 
