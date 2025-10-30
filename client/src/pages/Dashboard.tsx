@@ -5,8 +5,9 @@ import UsagePanel from '../components/UsagePanel';
 import ApiKeyPanel from '../components/ApiKeyPanel';
 import AdminPanel from '../components/AdminPanel';
 import CreditPanel from '../components/CreditPanel';
+import MessagesPanel from '../components/MessagesPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign } from 'lucide-react';
+import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail } from 'lucide-react';
 
 interface DashboardProps {
   token: string;
@@ -14,7 +15,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type Tab = 'chat' | 'usage' | 'credits' | 'apikey' | 'admin';
+type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'apikey' | 'admin';
 
 export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -336,6 +337,7 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             { id: 'chat', icon: MessageSquare, label: 'Chat', tab: 'chat' },
             { id: 'usage', icon: BarChart3, label: 'Usage', tab: 'usage' },
             { id: 'credits', icon: DollarSign, label: 'Credits', tab: 'credits' },
+            { id: 'messages', icon: Mail, label: 'Messages', tab: 'messages' },
             { id: 'apikey', icon: Key, label: 'API Key', tab: 'apikey' },
             ...(user.is_admin ? [{ id: 'admin', icon: Settings, label: 'Admin', tab: 'admin' }] : []),
           ].map(({ id, icon: Icon, label, tab }) => (
@@ -412,6 +414,9 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             )}
             {activeTab === 'credits' && (
               <CreditPanel token={token} isAdmin={user.is_admin || false} />
+            )}
+            {activeTab === 'messages' && (
+              <MessagesPanel />
             )}
             {activeTab === 'apikey' && (
               <ApiKeyPanel user={user} token={token} />
