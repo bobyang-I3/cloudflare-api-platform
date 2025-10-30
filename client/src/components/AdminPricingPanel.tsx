@@ -222,7 +222,7 @@ export default function AdminPricingPanel() {
               </div>
               <div>
                 <div style={{ fontSize: '12px', color: '#6b7280' }}>Inactive Models</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444" }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>
                   {stats.inactive_models}
                 </div>
               </div>
