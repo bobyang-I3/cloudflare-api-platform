@@ -70,21 +70,26 @@ class PoolResourceInfo(BaseModel):
 class PoolStatsResponse(BaseModel):
     """资源池统计"""
     total_resources: int
-    active_resources: int
-    total_value: float  # Credits
-    user_contributed: float  # Credits
-    platform_owned: float  # Credits
-    total_requests: int
-    total_contributors: int
+    total_deposited: float  # Total Credits deposited to pool
+    total_usage: float  # Total Credits consumed from pool
+    platform_revenue: float  # Platform's earnings (fees)
+    active_providers: int  # Number of active contributors
 
 
-class MyContributionResponse(BaseModel):
-    """我的贡献统计"""
-    total_deposited: float  # Credits
-    total_consumed: float  # Credits
-    remaining_value: float  # Credits
-    resources_count: int
-    deposits_count: int
+class MyContributionItem(BaseModel):
+    """单个贡献资源的详细信息"""
+    resource_id: str
+    model_id: str
+    model_name: str
+    status: str
+    initial_deposit: float
+    current_balance: float
+    total_usage: float
+    total_earned: float
+    deposited_at: datetime
+    
+    class Config:
+        from_attributes = True
 
 
 # ============= API Routes =============
@@ -96,44 +101,34 @@ async def get_pool_stats(
 ):
     """获取资源池统计信息"""
     
+    # Total resources count
     total_resources = db.query(PoolResource).count()
-    active_resources = db.query(PoolResource).filter(
-        PoolResource.status == PoolResourceStatus.ACTIVE
-    ).count()
     
-    # Calculate total value (sum of current quota)
-    total_value_query = db.query(func.sum(PoolResource.current_quota)).filter(
-        PoolResource.status == PoolResourceStatus.ACTIVE
-    ).scalar()
-    total_value = total_value_query or 0.0
+    # Total deposited (sum of all approved deposits)
+    total_deposited = db.query(func.sum(PoolDeposit.claimed_quota)).filter(
+        PoolDeposit.status == PoolDepositStatus.APPROVED
+    ).scalar() or 0.0
     
-    # User vs Platform contributions
-    user_contrib = db.query(func.sum(PoolResource.current_quota)).filter(
+    # Total usage (sum of all consumed credits)
+    total_usage = db.query(func.sum(PoolResource.total_consumed)).scalar() or 0.0
+    
+    # Platform revenue (10% fee from deposits + usage fees)
+    platform_revenue = db.query(func.sum(PoolDeposit.fee_amount)).filter(
+        PoolDeposit.status == PoolDepositStatus.APPROVED
+    ).scalar() or 0.0
+    
+    # Active providers (unique users with active resources)
+    active_providers = db.query(func.count(func.distinct(PoolResource.owner_id))).filter(
         PoolResource.owner_type == "user",
         PoolResource.status == PoolResourceStatus.ACTIVE
-    ).scalar() or 0.0
-    
-    platform_owned = db.query(func.sum(PoolResource.current_quota)).filter(
-        PoolResource.owner_type == "platform",
-        PoolResource.status == PoolResourceStatus.ACTIVE
-    ).scalar() or 0.0
-    
-    # Total requests
-    total_requests = db.query(func.sum(PoolResource.total_requests)).scalar() or 0
-    
-    # Total contributors
-    total_contributors = db.query(func.count(func.distinct(PoolResource.owner_id))).filter(
-        PoolResource.owner_type == "user"
-    ).scalar()
+    ).scalar() or 0
     
     return PoolStatsResponse(
         total_resources=total_resources,
-        active_resources=active_resources,
-        total_value=total_value,
-        user_contributed=user_contrib,
-        platform_owned=platform_owned,
-        total_requests=total_requests,
-        total_contributors=total_contributors
+        total_deposited=total_deposited,
+        total_usage=total_usage,
+        platform_revenue=platform_revenue,
+        active_providers=active_providers
     )
 
 
@@ -265,48 +260,45 @@ async def deposit_resource(
         raise HTTPException(status_code=500, detail=f"Failed to deposit resource: {str(e)}")
 
 
-@router.get("/my-contributions", response_model=MyContributionResponse)
+@router.get("/my-contributions", response_model=List[MyContributionItem])
 async def get_my_contributions(
     current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
-    """获取我的贡献统计"""
+    """获取我贡献的资源列表（详细信息）"""
     
-    # Total deposited
-    total_deposited = db.query(func.sum(PoolDeposit.credits_received)).filter(
-        PoolDeposit.user_id == current_user.id,
-        PoolDeposit.status == PoolDepositStatus.APPROVED
-    ).scalar() or 0.0
-    
-    # Total consumed (from my resources)
-    total_consumed_query = db.query(func.sum(PoolResource.total_consumed)).filter(
-        PoolResource.owner_id == current_user.id
-    ).scalar()
-    total_consumed = total_consumed_query or 0.0
-    
-    # Remaining value
-    remaining_value = db.query(func.sum(PoolResource.current_quota)).filter(
-        PoolResource.owner_id == current_user.id,
-        PoolResource.status == PoolResourceStatus.ACTIVE
-    ).scalar() or 0.0
-    
-    # Resources count
-    resources_count = db.query(PoolResource).filter(
-        PoolResource.owner_id == current_user.id
-    ).count()
-    
-    # Deposits count
-    deposits_count = db.query(PoolDeposit).filter(
+    # Get all deposits by this user
+    deposits = db.query(PoolDeposit).filter(
         PoolDeposit.user_id == current_user.id
-    ).count()
+    ).order_by(desc(PoolDeposit.created_at)).all()
     
-    return MyContributionResponse(
-        total_deposited=total_deposited,
-        total_consumed=total_consumed,
-        remaining_value=remaining_value,
-        resources_count=resources_count,
-        deposits_count=deposits_count
-    )
+    contributions = []
+    
+    for deposit in deposits:
+        # Find corresponding resource if exists
+        resource = db.query(PoolResource).filter(
+            PoolResource.owner_id == current_user.id,
+            PoolResource.provider == deposit.provider
+        ).first()
+        
+        # Calculate earned amount (85% of consumed, 10% goes to platform, 5% buffer)
+        earned_rate = 0.85
+        total_consumed = resource.total_consumed if resource else 0.0
+        total_earned = total_consumed * earned_rate
+        
+        contributions.append(MyContributionItem(
+            resource_id=resource.id if resource else deposit.id,
+            model_id=deposit.model_id or "unknown",
+            model_name=deposit.model_name or deposit.provider,
+            status=deposit.status.value,
+            initial_deposit=deposit.claimed_quota,
+            current_balance=resource.current_quota if resource else 0.0,
+            total_usage=total_consumed,
+            total_earned=total_earned,
+            deposited_at=deposit.created_at
+        ))
+    
+    return contributions
 
 
 @router.get("/my-resources", response_model=List[PoolResourceInfo])
