@@ -11,8 +11,8 @@ from slowapi.errors import RateLimitExceeded
 
 # Create FastAPI app
 app = FastAPI(
-    title="Cloudflare API Billing Platform",
-    description="API management platform with Credit-based billing for Cloudflare Workers AI",
+    title="Prism AI - Unified AI Resource Platform",
+    description="Next-generation platform aggregating AI resources from multiple providers with unified credit economy, resource marketplace, and intelligent routing",
     version="2.0.0"
 )
 
@@ -47,18 +47,19 @@ app.include_router(admin_router.router)
 @app.on_event("startup")
 def startup_event():
     """Initialize database on startup"""
-    print("🚀 Starting Cloudflare API Billing Platform...")
+    print("🚀 Starting Prism AI Platform...")
     init_db()
-    print(f"✅ Server ready on http://{settings.host}:{settings.port}")
+    print(f"✅ Prism AI ready on http://{settings.host}:{settings.port}")
 
 
 @app.get("/")
 def root():
     """Root endpoint"""
     return {
-        "message": "Cloudflare API Billing Platform",
-        "version": "1.0.0",
+        "message": "Prism AI - Unified AI Resource Platform",
+        "version": "2.0.0",
         "docs": "/docs",
+        "slogan": "One Platform, Infinite Possibilities",
         "health": "/health"
     }
 
