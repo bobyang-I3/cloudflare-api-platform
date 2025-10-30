@@ -38,6 +38,7 @@ def init_db():
     from models import User, UserLimit, UsageLog  # Import models to register them
     from models_credit import UserCredit, CreditTransaction, ModelPricing  # Import credit models
     from models_message import Message  # Import message model
+    from models_forum import Post, Comment, PostLike  # Import forum models
     Base.metadata.create_all(bind=engine)
     print("✅ Database initialized successfully")
 

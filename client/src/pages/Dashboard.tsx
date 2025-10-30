@@ -6,8 +6,9 @@ import ApiKeyPanel from '../components/ApiKeyPanel';
 import AdminPanel from '../components/AdminPanel';
 import CreditPanel from '../components/CreditPanel';
 import MessagesPanel from '../components/MessagesPanel';
+import ForumPanel from '../components/ForumPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail } from 'lucide-react';
+import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail, Users } from 'lucide-react';
 
 interface DashboardProps {
   token: string;
@@ -15,7 +16,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'apikey' | 'admin';
+type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'forum' | 'apikey' | 'admin';
 
 export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -338,6 +339,7 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             { id: 'usage', icon: BarChart3, label: 'Usage', tab: 'usage' },
             { id: 'credits', icon: DollarSign, label: 'Credits', tab: 'credits' },
             { id: 'messages', icon: Mail, label: 'Messages', tab: 'messages' },
+            { id: 'forum', icon: Users, label: 'Forum', tab: 'forum' },
             { id: 'apikey', icon: Key, label: 'API Key', tab: 'apikey' },
             ...(user.is_admin ? [{ id: 'admin', icon: Settings, label: 'Admin', tab: 'admin' }] : []),
           ].map(({ id, icon: Icon, label, tab }) => (
@@ -417,6 +419,9 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             )}
             {activeTab === 'messages' && (
               <MessagesPanel />
+            )}
+            {activeTab === 'forum' && (
+              <ForumPanel />
             )}
             {activeTab === 'apikey' && (
               <ApiKeyPanel user={user} token={token} />
