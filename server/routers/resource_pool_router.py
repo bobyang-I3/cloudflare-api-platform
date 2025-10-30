@@ -19,7 +19,7 @@ from credit_service import CreditService
 from api_key_validator import APIKeyValidator, ValidationResult
 
 
-router = APIRouter(prefix="/pool", tags=["Resource Pool"])
+router = APIRouter(prefix="/resource-pool", tags=["Resource Pool"])
 
 
 # ============= Pydantic Schemas =============
