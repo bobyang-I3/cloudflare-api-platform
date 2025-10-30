@@ -325,7 +325,7 @@ export default function GroupChatPanel() {
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {groups.length === 0 ? (
             <div style={{ padding: '40px 20px', textAlign: 'center', color: '#9ca3af' }}>
-              <Users size={48} style={{ margin: '0 auto 12px', opacity: 0.5' }} />
+              <Users size={48} style={{ margin: '0 auto 12px', opacity: 0.5 }} />
               <p>No groups yet</p>
               <p style={{ fontSize: '14px' }}>Create or join a group</p>
             </div>
