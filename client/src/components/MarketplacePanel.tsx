@@ -100,7 +100,7 @@ export default function MarketplacePanel() {
     
     const amount = parseFloat(purchaseAmount);
     if (isNaN(amount) || amount < selectedListing.min_purchase) {
-      alert(`Minimum purchase is $${selectedListing.min_purchase}`);
+      alert(`Minimum purchase is ${selectedListing.min_purchase} Credits`);
       return;
     }
     
@@ -177,7 +177,7 @@ export default function MarketplacePanel() {
           </div>
           <div style={{ background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Total Volume</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>${stats.total_volume.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{stats.total_volume.toFixed(2)} Credits</div>
           </div>
           <div style={{ background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Avg Discount</div>
@@ -328,13 +328,13 @@ export default function MarketplacePanel() {
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                   <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#3b82f6' }}>
-                    ${listing.price_per_1m_tokens.toFixed(2)}
+                    {listing.price_per_1m_tokens.toFixed(2)}
                   </span>
-                  <span style={{ fontSize: '13px', color: '#6b7280' }}>/ 1M tokens</span>
+                  <span style={{ fontSize: '13px', color: '#6b7280' }}>Credits / 1M tokens</span>
                 </div>
                 {listing.official_price && (
                   <div style={{ fontSize: '12px', color: '#9ca3af', textDecoration: 'line-through' }}>
-                    Official: ${listing.official_price.toFixed(2)}
+                    Official: {listing.official_price.toFixed(2)} Credits
                   </div>
                 )}
               </div>
@@ -368,7 +368,7 @@ export default function MarketplacePanel() {
               {/* Availability */}
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>
-                  Available: ${listing.available_quota.toFixed(2)} / ${listing.total_quota.toFixed(2)}
+                  Available: {listing.available_quota.toFixed(2)} / {listing.total_quota.toFixed(2)} Credits
                 </div>
                 <div style={{ 
                   height: '4px', 
@@ -403,7 +403,7 @@ export default function MarketplacePanel() {
 
               {/* Min Purchase */}
               <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                Min purchase: ${listing.min_purchase.toFixed(2)}
+                Min purchase: {listing.min_purchase.toFixed(2)} Credits
               </div>
             </div>
           ))}
@@ -466,14 +466,14 @@ export default function MarketplacePanel() {
                 Seller: @{selectedListing.seller_username}
               </div>
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#3b82f6', marginTop: '12px' }}>
-                ${selectedListing.price_per_1m_tokens.toFixed(2)} / 1M tokens
+                {selectedListing.price_per_1m_tokens.toFixed(2)} Credits / 1M tokens
               </div>
             </div>
 
             {/* Purchase Amount */}
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>
-                Purchase Amount (USD)
+                Purchase Amount (Credits)
               </label>
               <input
                 type="number"
@@ -482,7 +482,7 @@ export default function MarketplacePanel() {
                 min={selectedListing.min_purchase}
                 max={selectedListing.available_quota}
                 step="0.01"
-                placeholder={`Min: $${selectedListing.min_purchase}`}
+                placeholder={`Min: ${selectedListing.min_purchase} Credits`}
                 style={{
                   width: '100%',
                   padding: '10px',
@@ -493,7 +493,7 @@ export default function MarketplacePanel() {
                 disabled={isPurchasing}
               />
               <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-                Available: ${selectedListing.available_quota.toFixed(2)}
+                Available: {selectedListing.available_quota.toFixed(2)} Credits
               </div>
             </div>
 

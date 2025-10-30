@@ -550,7 +550,7 @@ export default function MyResourcesPanel() {
 
                   <div>
                     <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
-                      Total Quota (USD)
+                      Total Quota (Credits)
                     </label>
                     <input
                       type="number"
@@ -591,7 +591,7 @@ export default function MyResourcesPanel() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
-                  Price per 1M tokens (USD)
+                  Price per 1M tokens (Credits)
                 </label>
                 <input
                   type="number"
@@ -631,7 +631,7 @@ export default function MyResourcesPanel() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
-                  Minimum Purchase (USD)
+                  Minimum Purchase (Credits)
                 </label>
                 <input
                   type="number"
