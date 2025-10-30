@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Users, Plus, Send, Settings, UserPlus, LogOut, Trash2, Clock, X } from 'lucide-react';
+import { Users, Plus, Send, UserPlus, LogOut, Clock, X } from 'lucide-react';
 
 interface UserInfo {
   id: string;
