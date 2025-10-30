@@ -74,6 +74,16 @@ export default function MyResourcesPanel() {
   const handleCreateListing = async () => {
     try {
       const token = localStorage.getItem('token');
+      
+      // Validate required fields
+      if (!formData.model_id || !formData.model_name || !formData.provider || 
+          !formData.price_per_1m_tokens || !formData.total_quota || !formData.title) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      console.log('Creating listing with data:', formData);
+      
       const response = await fetch(`${API_BASE}/api/marketplace/listings`, {
         method: 'POST',
         headers: {
@@ -93,18 +103,28 @@ export default function MyResourcesPanel() {
         })
       });
       
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         alert('Resource listed successfully!');
         setShowCreateModal(false);
         resetForm();
         fetchMyListings();
       } else {
-        const error = await response.json();
-        alert(`Failed to create listing: ${error.detail}`);
+        let errorMessage = 'Unknown error';
+        try {
+          const error = await response.json();
+          errorMessage = error.detail || JSON.stringify(error);
+        } catch (e) {
+          const text = await response.text();
+          errorMessage = text || `HTTP ${response.status}`;
+        }
+        console.error('Server error:', errorMessage);
+        alert(`Failed to create listing: ${errorMessage}`);
       }
     } catch (error) {
       console.error('Create listing error:', error);
-      alert('Failed to create listing. Please try again.');
+      alert(`Failed to create listing: ${error instanceof Error ? error.message : 'Network error. Please check your connection.'}`);
     }
   };
 
