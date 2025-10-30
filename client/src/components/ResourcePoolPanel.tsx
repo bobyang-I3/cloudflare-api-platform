@@ -105,7 +105,7 @@ export default function ResourcePoolPanel() {
       
       if (response.ok) {
         const result = await response.json();
-        alert(`Successfully deposited! You received ${result.credited_amount.toFixed(2)} Credits (90% after 10% platform fee)`);
+        alert(`Successfully deposited! You received ${result.credits_to_receive.toFixed(2)} Credits (initial 10% release after verification)`);
         setShowDepositModal(false);
         resetDepositForm();
         fetchPoolData();
