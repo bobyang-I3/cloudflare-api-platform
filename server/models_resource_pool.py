@@ -109,13 +109,17 @@ class PoolDeposit(Base):
     
     # 存款信息
     provider = Column(String, nullable=False)
+    model_id = Column(String)  # Model ID (e.g., @cf/meta/llama-3.1-8b-instruct)
+    model_name = Column(String)  # Model display name
     resource_type = Column(String, default="api_key")
     deposited_amount = Column(Float, nullable=False)  # 存入金额
     deposited_unit = Column(String, default="usd")
+    claimed_quota = Column(Float)  # User's claimed quota in Credits
     
     # 手续费和Credit转换
     platform_fee_rate = Column(Float, default=0.10)  # 手续费率（10%）
     platform_fee = Column(Float, nullable=False)  # 平台手续费
+    fee_amount = Column(Float)  # Alias for platform_fee (for compatibility)
     credits_received = Column(Float, nullable=False)  # 获得的Credits
     credit_conversion_rate = Column(Float, default=1.0)  # 转换率
     

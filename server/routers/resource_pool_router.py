@@ -192,11 +192,15 @@ async def deposit_resource(
         deposit = PoolDeposit(
             user_id=current_user.id,
             provider=data.provider,
+            model_id=data.model_id,
+            model_name=data.model_name,
             resource_type="api_key",
-            deposited_amount=estimated_credits,
+            deposited_amount=actual_quota,
             deposited_unit="credits",
+            claimed_quota=data.quota_credits,
             platform_fee_rate=fee_rate,
             platform_fee=fee_amount,
+            fee_amount=fee_amount,
             credits_received=credits_to_receive,
             credit_conversion_rate=1.0,
             verification_method="auto",
@@ -214,13 +218,13 @@ async def deposit_resource(
             provider=data.provider,
             resource_type="api_key",
             api_key_encrypted=f"encrypted_{data.api_key}",  # TODO: Real encryption
-            api_endpoint=data.api_endpoint,
-            original_quota=estimated_credits,
-            current_quota=estimated_credits,
+            api_endpoint=data.base_url,
+            original_quota=actual_quota,
+            current_quota=actual_quota,
             quota_unit="credits",
             status=PoolResourceStatus.ACTIVE,
             priority=0,
-            notes=data.notes
+            notes=None
         )
         
         db.add(resource)
@@ -247,7 +251,7 @@ async def deposit_resource(
         
         return DepositResponse(
             deposit_id=deposit.id,
-            estimated_value=estimated_credits,
+            estimated_value=actual_quota,
             fee_rate=fee_rate,
             fee_amount=fee_amount,
             credits_to_receive=credits_to_receive,
