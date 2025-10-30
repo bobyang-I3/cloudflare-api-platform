@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Database, TrendingUp, DollarSign, Zap, Shield, Activity } from 'lucide-react';
+import { Database, TrendingUp, Shield, Activity } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
