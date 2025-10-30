@@ -39,6 +39,8 @@ def init_db():
     from models_credit import UserCredit, CreditTransaction, ModelPricing  # Import credit models
     from models_message import Message  # Import message model
     from models_forum import Post, Comment, PostLike  # Import forum models
+    from models_profile import UserProfile  # Import profile model
+    from models_group import ChatGroup, GroupMember, GroupMessage  # Import group chat models
     Base.metadata.create_all(bind=engine)
     print("✅ Database initialized successfully")
 
