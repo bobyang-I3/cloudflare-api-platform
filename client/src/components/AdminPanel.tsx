@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { api, UserWithLimit, PlatformStats } from '../api';
 import AdminCreditPanel from './AdminCreditPanel';
 import AdminPricingPanel from './AdminPricingPanel';
+import AdminResourcePoolPanel from './AdminResourcePoolPanel';
 
-type AdminTab = 'users' | 'credits' | 'pricing';
+type AdminTab = 'users' | 'credits' | 'pricing' | 'pool';
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
@@ -172,6 +173,23 @@ export default function AdminPanel() {
           >
             💲 Pricing
           </button>
+          <button
+            onClick={() => setActiveTab('pool')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'pool' ? '#8b5cf6' : 'transparent',
+              color: activeTab === 'pool' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              marginBottom: '-2px',
+              borderBottom: activeTab === 'pool' ? '2px solid #8b5cf6' : 'none'
+            }}
+          >
+            🏦 Resource Pool
+          </button>
         </div>
       </div>
 
@@ -180,6 +198,9 @@ export default function AdminPanel() {
 
       {/* Pricing Tab */}
       {activeTab === 'pricing' && <AdminPricingPanel />}
+
+      {/* Resource Pool Tab */}
+      {activeTab === 'pool' && <AdminResourcePoolPanel />}
 
       {/* Users Tab */}
       {activeTab === 'users' && (
