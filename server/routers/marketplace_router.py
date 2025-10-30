@@ -14,7 +14,7 @@ from models_marketplace import (
     ResourceListing, ResourceTransaction, ResourceReview, APIKeyVault,
     ResourceStatus, TransactionStatus
 )
-from auth import get_current_user
+from auth import get_current_user_from_token
 from credit_service import CreditService
 
 
@@ -208,7 +208,7 @@ async def get_listings(
 
 @router.get("/my-listings", response_model=List[ListingResponse])
 async def get_my_listings(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """获取我的资源列表"""
@@ -232,7 +232,7 @@ async def get_my_listings(
 @router.post("/listings", response_model=ListingResponse)
 async def create_listing(
     data: ListingCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """创建资源列表（上架资源）"""
@@ -275,7 +275,7 @@ async def create_listing(
 async def update_listing(
     listing_id: str,
     data: ListingUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """更新资源列表"""
@@ -322,7 +322,7 @@ async def update_listing(
 @router.delete("/listings/{listing_id}")
 async def delete_listing(
     listing_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """删除资源列表（下架）"""
@@ -344,7 +344,7 @@ async def delete_listing(
 @router.post("/purchase")
 async def purchase_resource(
     data: PurchaseRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """购买资源"""
@@ -449,7 +449,7 @@ async def purchase_resource(
 @router.get("/transactions")
 async def get_my_transactions(
     transaction_type: str = Query("all", regex="^(all|purchases|sales)$"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """获取我的交易记录"""
@@ -499,7 +499,7 @@ async def get_my_transactions(
 @router.post("/reviews")
 async def create_review(
     data: ReviewCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
     """创建评价"""
