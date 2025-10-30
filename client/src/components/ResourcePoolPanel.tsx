@@ -494,7 +494,7 @@ export default function ResourcePoolPanel() {
                   <option value="">Select a provider...</option>
                   <option value="OpenAI">OpenAI (GPT models)</option>
                   <option value="Anthropic">Anthropic (Claude models)</option>
-                  <option value="Cloudflare">Cloudflare Workers AI</option>
+                  <option value="Cloudflare">Cloudflare</option>
                   <option value="Other">Other (requires Base URL)</option>
                 </select>
                 <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#6b7280' }}>
