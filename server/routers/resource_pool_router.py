@@ -234,11 +234,11 @@ async def deposit_resource(
         deposit.resource_id = resource.id
         
         # Add Credits to user account
-        credit_service = CreditService(db)
-        credit_service.add_credits(
+        CreditService.deposit(
             user_id=current_user.id,
             amount=credits_to_receive,
-            description=f"Resource Pool deposit: {data.provider} API Key"
+            description=f"Resource Pool deposit: {data.provider} API Key",
+            db=db
         )
         
         # Approve deposit
