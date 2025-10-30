@@ -81,6 +81,12 @@ export default function ResourcePoolPanel() {
         return;
       }
       
+      // Validate Base URL for "Other" provider
+      if (depositForm.provider === 'Other' && !depositForm.base_url) {
+        alert('Base URL is required for custom providers. Please provide the API endpoint URL.');
+        return;
+      }
+      
       const response = await fetch(`${API_BASE}/api/resource-pool/deposit`, {
         method: 'POST',
         headers: {
@@ -473,19 +479,27 @@ export default function ResourcePoolPanel() {
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
                   Provider *
                 </label>
-                <input
-                  type="text"
+                <select
                   value={depositForm.provider}
                   onChange={(e) => setDepositForm({...depositForm, provider: e.target.value})}
-                  placeholder="OpenAI, Anthropic, Cloudflare, etc."
                   style={{
                     width: '100%',
                     padding: '10px',
                     border: '1px solid #d1d5db',
                     borderRadius: '6px',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    backgroundColor: 'white'
                   }}
-                />
+                >
+                  <option value="">Select a provider...</option>
+                  <option value="OpenAI">OpenAI (GPT models)</option>
+                  <option value="Anthropic">Anthropic (Claude models)</option>
+                  <option value="Cloudflare">Cloudflare Workers AI</option>
+                  <option value="Other">Other (requires Base URL)</option>
+                </select>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#6b7280' }}>
+                  {depositForm.provider === 'Other' && '⚠️ For custom providers, you must provide a Base URL below'}
+                </p>
               </div>
 
               <div>
@@ -535,17 +549,17 @@ export default function ResourcePoolPanel() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
-                  Base URL (optional)
+                  Base URL {depositForm.provider === 'Other' ? '*' : '(optional)'}
                 </label>
                 <input
                   type="text"
                   value={depositForm.base_url}
                   onChange={(e) => setDepositForm({...depositForm, base_url: e.target.value})}
-                  placeholder="https://api.openai.com/v1"
+                  placeholder={depositForm.provider === 'Other' ? 'https://your-api.com/v1' : 'https://api.openai.com/v1'}
                   style={{
                     width: '100%',
                     padding: '10px',
-                    border: '1px solid #d1d5db',
+                    border: `1px solid ${depositForm.provider === 'Other' && !depositForm.base_url ? '#ef4444' : '#d1d5db'}`,
                     borderRadius: '6px',
                     fontSize: '14px'
                   }}
