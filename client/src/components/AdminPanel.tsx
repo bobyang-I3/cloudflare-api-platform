@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { api, UserWithLimit, PlatformStats } from '../api';
 import AdminCreditPanel from './AdminCreditPanel';
+import AdminPricingPanel from './AdminPricingPanel';
 
-type AdminTab = 'users' | 'credits';
+type AdminTab = 'users' | 'credits' | 'pricing';
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
@@ -154,11 +155,31 @@ export default function AdminPanel() {
           >
             💰 Credits
           </button>
+          <button
+            onClick={() => setActiveTab('pricing')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'pricing' ? '#f59e0b' : 'transparent',
+              color: activeTab === 'pricing' ? 'white' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              marginBottom: '-2px',
+              borderBottom: activeTab === 'pricing' ? '2px solid #f59e0b' : 'none'
+            }}
+          >
+            💲 Pricing
+          </button>
         </div>
       </div>
 
       {/* Credits Tab */}
       {activeTab === 'credits' && <AdminCreditPanel />}
+
+      {/* Pricing Tab */}
+      {activeTab === 'pricing' && <AdminPricingPanel />}
 
       {/* Users Tab */}
       {activeTab === 'users' && (
