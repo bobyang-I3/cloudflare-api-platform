@@ -317,8 +317,6 @@ export default function AdminCreditPanel() {
               step="0.01"
               disabled={!selectedUser}
             />
-            {amount && (
-            )}
           </div>
 
           {/* Description */}
