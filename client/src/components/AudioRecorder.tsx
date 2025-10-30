@@ -122,11 +122,12 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: '#ffffff',
+      border: '1px solid #e5e7eb',
       borderRadius: '16px',
       padding: '24px',
-      color: 'white',
-      boxShadow: '0 8px 32px rgba(102, 126, 234, 0.4)'
+      color: '#1f2937',
+      boxShadow: '0 8px 24px rgba(15,23,42,0.06)'
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -138,14 +139,14 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
           <button
             onClick={onCancel}
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: 'none',
+              background: '#f3f4f6',
+              border: '1px solid #e5e7eb',
               borderRadius: '8px',
               padding: '6px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              color: 'white'
+              color: '#374151'
             }}
           >
             <X size={20} />
@@ -231,27 +232,27 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
             <button
               onClick={startRecording}
               style={{
-                background: 'rgba(255, 255, 255, 0.95)',
+                background: '#667eea',
                 border: 'none',
                 borderRadius: '12px',
                 padding: '16px 32px',
-                color: '#667eea',
+                color: 'white',
                 fontSize: '16px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
                 transition: 'all 0.2s'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.15)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.15)';
               }}
             >
               <Mic size={20} />
@@ -264,9 +265,9 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
         {/* Divider - Only show if recording is supported */}
         {isRecordingSupported && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '8px 0' }}>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }} />
-            <span style={{ fontSize: '12px', opacity: 0.8 }}>OR</span>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' }} />
+            <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
+            <span style={{ fontSize: '12px', color: '#6b7280' }}>OR</span>
+            <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
           </div>
         )}
 
@@ -276,8 +277,8 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           style={{
-            background: isDragging ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.15)',
-            border: '2px dashed rgba(255, 255, 255, 0.5)',
+            background: isDragging ? '#f1f5f9' : '#f9fafb',
+            border: '2px dashed #d1d5db',
             borderRadius: '12px',
             padding: '24px',
             textAlign: 'center',
@@ -286,14 +287,14 @@ export function AudioRecorder({ onAudioCapture, onCancel }: AudioRecorderProps) 
           }}
           onClick={() => document.getElementById('audio-file-input')?.click()}
         >
-          <Upload size={32} style={{ margin: '0 auto 12px', opacity: 0.9 }} />
-          <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+          <Upload size={32} style={{ margin: '0 auto 12px', color: '#6b7280' }} />
+          <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#374151' }}>
             Upload Audio File
           </div>
-          <div style={{ fontSize: '12px', opacity: 0.8 }}>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>
             Drag & drop or click to browse
           </div>
-          <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '8px' }}>
+          <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px' }}>
             Supports MP3, WAV, M4A, etc.
           </div>
           <input
