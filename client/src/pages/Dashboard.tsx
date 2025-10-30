@@ -12,8 +12,9 @@ import GroupChatPanel from '../components/GroupChatPanel';
 import MarketplacePanel from '../components/MarketplacePanel';
 import MyResourcesPanel from '../components/MyResourcesPanel';
 import ResourceTransactionsPanel from '../components/ResourceTransactionsPanel';
+import ResourcePoolPanel from '../components/ResourcePoolPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail, Users, UserCircle, UsersRound, Store, Package, Receipt, ChevronDown } from 'lucide-react';
+import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail, Users, UserCircle, UsersRound, Store, Package, Receipt, ChevronDown, Database } from 'lucide-react';
 
 interface DashboardProps {
   token: string;
@@ -21,7 +22,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'forum' | 'profile' | 'groups' | 'marketplace' | 'my-resources' | 'transactions' | 'apikey' | 'admin';
+type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'forum' | 'profile' | 'groups' | 'marketplace' | 'my-resources' | 'transactions' | 'resource-pool' | 'apikey' | 'admin';
 
 export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -431,6 +432,7 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             { id: 'marketplace', icon: Store, label: 'Market', tab: 'marketplace', group: 'market' },
             { id: 'my-resources', icon: Package, label: 'My Resources', tab: 'my-resources', group: 'market' },
             { id: 'transactions', icon: Receipt, label: 'Transactions', tab: 'transactions', group: 'market' },
+            { id: 'resource-pool', icon: Database, label: 'Resource Pool', tab: 'resource-pool', group: 'market' },
             
             // Account Management
             { id: 'credits', icon: DollarSign, label: 'Credits', tab: 'credits', group: 'account' },
@@ -548,6 +550,9 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             )}
             {activeTab === 'transactions' && (
               <ResourceTransactionsPanel />
+            )}
+            {activeTab === 'resource-pool' && (
+              <ResourcePoolPanel />
             )}
             {activeTab === 'apikey' && (
               <ApiKeyPanel user={user} token={token} />

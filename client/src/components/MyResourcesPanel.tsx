@@ -283,7 +283,7 @@ export default function MyResourcesPanel() {
       }}>
         <div style={{ background: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
           <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>Total Revenue (85%)</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>${totalRevenue.toFixed(2)}</div>
+          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{totalRevenue.toFixed(2)} Credits</div>
         </div>
         <div style={{ background: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
           <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>Total Orders</div>
@@ -375,19 +375,19 @@ export default function MyResourcesPanel() {
                     <div>
                       <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '4px' }}>Price</div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#3b82f6' }}>
-                        ${listing.price_per_1m_tokens.toFixed(2)}/1M
+                        {listing.price_per_1m_tokens.toFixed(2)}/1M
                       </div>
                     </div>
                     <div>
                       <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '4px' }}>Available</div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                        ${listing.available_quota.toFixed(2)}
+                        {listing.available_quota.toFixed(2)} Credits
                       </div>
                     </div>
                     <div>
                       <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '4px' }}>Sales</div>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>
-                        ${listing.total_sales.toFixed(2)}
+                        {listing.total_sales.toFixed(2)} Credits
                       </div>
                     </div>
                     <div>
