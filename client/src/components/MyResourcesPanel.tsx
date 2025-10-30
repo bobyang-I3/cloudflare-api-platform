@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Package, Plus, Edit2, Trash2, DollarSign, TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { Package, Plus, Edit2, Trash2, Eye, EyeOff } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 

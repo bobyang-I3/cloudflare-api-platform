@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Store, Search, Filter, TrendingDown, Star, ShoppingCart, DollarSign, Package } from 'lucide-react';
+import { Store, Search, TrendingDown, Star, ShoppingCart, Package } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
