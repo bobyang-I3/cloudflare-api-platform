@@ -55,3 +55,4 @@ class GroupMessage(Base):
     group = relationship("ChatGroup", back_populates="messages")
     sender = relationship("User", foreign_keys=[sender_id])
 
+

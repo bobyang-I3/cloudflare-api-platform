@@ -25,3 +25,4 @@ class UserProfile(Base):
     # Relationships
     user = relationship("User", foreign_keys=[user_id])
 
+

@@ -56,3 +56,4 @@ class PostLike(Base):
     post = relationship("Post", back_populates="likes")
     user = relationship("User", foreign_keys=[user_id])
 
+

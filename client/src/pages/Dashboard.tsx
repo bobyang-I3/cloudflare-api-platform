@@ -9,8 +9,11 @@ import MessagesPanel from '../components/MessagesPanel';
 import ForumPanel from '../components/ForumPanel';
 import ProfilePanel from '../components/ProfilePanel';
 import GroupChatPanel from '../components/GroupChatPanel';
+import MarketplacePanel from '../components/MarketplacePanel';
+import MyResourcesPanel from '../components/MyResourcesPanel';
+import ResourceTransactionsPanel from '../components/ResourceTransactionsPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail, Users, UserCircle, UsersRound } from 'lucide-react';
+import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail, Users, UserCircle, UsersRound, Store, Package, Receipt } from 'lucide-react';
 
 interface DashboardProps {
   token: string;
@@ -18,7 +21,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'forum' | 'profile' | 'groups' | 'apikey' | 'admin';
+type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'forum' | 'profile' | 'groups' | 'marketplace' | 'my-resources' | 'transactions' | 'apikey' | 'admin';
 
 export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -344,6 +347,9 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             { id: 'forum', icon: Users, label: 'Forum', tab: 'forum' },
             { id: 'groups', icon: UsersRound, label: 'Groups', tab: 'groups' },
             { id: 'profile', icon: UserCircle, label: 'Profile', tab: 'profile' },
+            { id: 'marketplace', icon: Store, label: 'Marketplace', tab: 'marketplace' },
+            { id: 'my-resources', icon: Package, label: 'My Resources', tab: 'my-resources' },
+            { id: 'transactions', icon: Receipt, label: 'Transactions', tab: 'transactions' },
             { id: 'apikey', icon: Key, label: 'API Key', tab: 'apikey' },
             ...(user.is_admin ? [{ id: 'admin', icon: Settings, label: 'Admin', tab: 'admin' }] : []),
           ].map(({ id, icon: Icon, label, tab }) => (
@@ -432,6 +438,15 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             )}
             {activeTab === 'profile' && (
               <ProfilePanel />
+            )}
+            {activeTab === 'marketplace' && (
+              <MarketplacePanel />
+            )}
+            {activeTab === 'my-resources' && (
+              <MyResourcesPanel />
+            )}
+            {activeTab === 'transactions' && (
+              <ResourceTransactionsPanel />
             )}
             {activeTab === 'apikey' && (
               <ApiKeyPanel user={user} token={token} />

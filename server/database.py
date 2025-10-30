@@ -41,6 +41,7 @@ def init_db():
     from models_forum import Post, Comment, PostLike  # Import forum models
     from models_profile import UserProfile  # Import profile model
     from models_group import ChatGroup, GroupMember, GroupMessage  # Import group chat models
+    from models_marketplace import ResourceListing, ResourceTransaction, ResourceReview, APIKeyVault  # Import marketplace models
     Base.metadata.create_all(bind=engine)
     print("✅ Database initialized successfully")
 
