@@ -6,8 +6,14 @@ import ApiKeyPanel from '../components/ApiKeyPanel';
 import AdminPanel from '../components/AdminPanel';
 import CreditPanel from '../components/CreditPanel';
 import MessagesPanel from '../components/MessagesPanel';
+import ForumPanel from '../components/ForumPanel';
+import ProfilePanel from '../components/ProfilePanel';
+import GroupChatPanel from '../components/GroupChatPanel';
+import MarketplacePanel from '../components/MarketplacePanel';
+import MyResourcesPanel from '../components/MyResourcesPanel';
+import ResourceTransactionsPanel from '../components/ResourceTransactionsPanel';
 import ConversationSidebar, { Conversation } from '../components/ConversationSidebar';
-import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail } from 'lucide-react';
+import { MessageSquare, BarChart3, Key, Settings, LogOut, Zap, DollarSign, Mail, Users, UserCircle, UsersRound, Store, Package, Receipt, ChevronDown } from 'lucide-react';
 
 interface DashboardProps {
   token: string;
@@ -15,7 +21,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'apikey' | 'admin';
+type Tab = 'chat' | 'usage' | 'credits' | 'messages' | 'forum' | 'profile' | 'groups' | 'marketplace' | 'my-resources' | 'transactions' | 'apikey' | 'admin';
 
 export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('chat');
@@ -31,6 +37,9 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
   
   // Mobile responsive state
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
+  // User menu state
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -287,35 +296,110 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
                 <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>tokens</span>
               </div>
             )}
-            <button
-              onClick={onLogout}
-              style={{
-                fontSize: isMobile ? '12px' : '14px',
-                padding: isMobile ? '8px 12px' : '10px 20px',
-                background: 'rgba(255,255,255,0.2)',
-                border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white',
-                borderRadius: isMobile ? '8px' : '12px',
-                cursor: 'pointer',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: isMobile ? '4px' : '8px',
-                transition: 'all 0.2s',
-                backdropFilter: 'blur(10px)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
-                if (!isMobile) e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <LogOut size={isMobile ? 14 : 16} />
-              {!isMobile && 'Logout'}
-            </button>
+            
+            {/* User Menu */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                style={{
+                  fontSize: isMobile ? '12px' : '14px',
+                  padding: isMobile ? '8px 12px' : '10px 16px',
+                  background: 'rgba(255,255,255,0.2)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  color: 'white',
+                  borderRadius: isMobile ? '8px' : '12px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: isMobile ? '6px' : '10px',
+                  transition: 'all 0.2s',
+                  backdropFilter: 'blur(10px)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = showUserMenu ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)';
+                }}
+              >
+                <UserCircle size={isMobile ? 16 : 20} />
+                {!isMobile && <span>{user.username}</span>}
+                <ChevronDown size={14} style={{ 
+                  transition: 'transform 0.2s',
+                  transform: showUserMenu ? 'rotate(180deg)' : 'rotate(0deg)'
+                }} />
+              </button>
+              
+              {/* Dropdown Menu */}
+              {showUserMenu && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '8px',
+                  background: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+                  minWidth: '200px',
+                  zIndex: 1000,
+                  overflow: 'hidden'
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveTab('profile');
+                      setShowUserMenu(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: 'white',
+                      border: 'none',
+                      borderBottom: '1px solid #f3f4f6',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#1f2937',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f9fafb'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  >
+                    <UserCircle size={18} color="#667eea" />
+                    <span>My Profile</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      onLogout();
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: 'white',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#ef4444',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#fef2f2'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  >
+                    <LogOut size={18} />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -334,48 +418,77 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
           msOverflowStyle: 'none'
         }}>
           {[
-            { id: 'chat', icon: MessageSquare, label: 'Chat', tab: 'chat' },
-            { id: 'usage', icon: BarChart3, label: 'Usage', tab: 'usage' },
-            { id: 'credits', icon: DollarSign, label: 'Credits', tab: 'credits' },
-            { id: 'messages', icon: Mail, label: 'Messages', tab: 'messages' },
-            { id: 'apikey', icon: Key, label: 'API Key', tab: 'apikey' },
-            ...(user.is_admin ? [{ id: 'admin', icon: Settings, label: 'Admin', tab: 'admin' }] : []),
-          ].map(({ id, icon: Icon, label, tab }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(tab as Tab)}
-              style={{
-                padding: isMobile ? '10px 16px' : '14px 24px',
-                border: 'none',
-                background: activeTab === tab ? 'rgba(255,255,255,0.95)' : 'transparent',
-                cursor: 'pointer',
-                borderRadius: activeTab === tab ? (isMobile ? '8px 8px 0 0' : '12px 12px 0 0') : '0',
-                color: activeTab === tab ? '#667eea' : 'rgba(255,255,255,0.85)',
-                fontWeight: activeTab === tab ? '600' : '500',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: isMobile ? '6px' : '8px',
-                fontSize: isMobile ? '13px' : '15px',
-                position: 'relative',
-                flexShrink: 0,
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab !== tab && !isMobile) {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeTab !== tab) {
-                  e.currentTarget.style.background = 'transparent';
-                }
-              }}
-            >
-              <Icon size={isMobile ? 16 : 18} strokeWidth={2} />
-              {!isMobile || label.length <= 6 ? label : ''}
-            </button>
-          ))}
+            // Core Features
+            { id: 'chat', icon: MessageSquare, label: 'Chat', tab: 'chat', group: 'core' },
+            { id: 'usage', icon: BarChart3, label: 'Usage', tab: 'usage', group: 'core' },
+            
+            // Social & Community  
+            { id: 'messages', icon: Mail, label: 'Messages', tab: 'messages', group: 'social' },
+            { id: 'forum', icon: Users, label: 'Forum', tab: 'forum', group: 'social' },
+            { id: 'groups', icon: UsersRound, label: 'Groups', tab: 'groups', group: 'social' },
+            
+            // Marketplace & Trading
+            { id: 'marketplace', icon: Store, label: 'Market', tab: 'marketplace', group: 'market' },
+            { id: 'my-resources', icon: Package, label: 'My Resources', tab: 'my-resources', group: 'market' },
+            { id: 'transactions', icon: Receipt, label: 'Transactions', tab: 'transactions', group: 'market' },
+            
+            // Account Management
+            { id: 'credits', icon: DollarSign, label: 'Credits', tab: 'credits', group: 'account' },
+            { id: 'apikey', icon: Key, label: 'API Key', tab: 'apikey', group: 'account' },
+            
+            // Admin
+            ...(user.is_admin ? [{ id: 'admin', icon: Settings, label: 'Admin', tab: 'admin', group: 'admin' }] : []),
+          ].map(({ id, icon: Icon, label, tab, group }, index, array) => {
+            const prevItem = array[index - 1];
+            const showDivider = prevItem && prevItem.group !== group;
+            
+            return (
+              <div key={id} style={{ display: 'flex', alignItems: 'center' }}>
+                {showDivider && (
+                  <div style={{
+                    width: '1px',
+                    height: isMobile ? '24px' : '32px',
+                    background: 'rgba(255,255,255,0.3)',
+                    margin: isMobile ? '0 4px' : '0 8px'
+                  }} />
+                )}
+                <button
+                  onClick={() => setActiveTab(tab as Tab)}
+                  style={{
+                    padding: isMobile ? '10px 12px' : '14px 20px',
+                    border: 'none',
+                    background: activeTab === tab ? 'rgba(255,255,255,0.95)' : 'transparent',
+                    cursor: 'pointer',
+                    borderRadius: activeTab === tab ? (isMobile ? '8px 8px 0 0' : '12px 12px 0 0') : '0',
+                    color: activeTab === tab ? '#667eea' : 'rgba(255,255,255,0.85)',
+                    fontWeight: activeTab === tab ? '600' : '500',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: isMobile ? '6px' : '8px',
+                    fontSize: isMobile ? '12px' : '14px',
+                    whiteSpace: 'nowrap',
+                    boxShadow: activeTab === tab ? '0 -2px 8px rgba(102, 126, 234, 0.2)' : 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== tab) {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.color = 'white';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== tab) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
+                    }
+                  }}
+                >
+                  <Icon size={isMobile ? 16 : 18} />
+                  {!isMobile && label}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -417,6 +530,24 @@ export default function Dashboard({ token, user, onLogout }: DashboardProps) {
             )}
             {activeTab === 'messages' && (
               <MessagesPanel />
+            )}
+            {activeTab === 'forum' && (
+              <ForumPanel />
+            )}
+            {activeTab === 'groups' && (
+              <GroupChatPanel />
+            )}
+            {activeTab === 'profile' && (
+              <ProfilePanel />
+            )}
+            {activeTab === 'marketplace' && (
+              <MarketplacePanel />
+            )}
+            {activeTab === 'my-resources' && (
+              <MyResourcesPanel />
+            )}
+            {activeTab === 'transactions' && (
+              <ResourceTransactionsPanel />
             )}
             {activeTab === 'apikey' && (
               <ApiKeyPanel user={user} token={token} />
