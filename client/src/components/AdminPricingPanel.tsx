@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, Package, Search, Edit2, RefreshCw, BarChart3, CheckCircle, XCircle } from 'lucide-react';
+import { DollarSign, TrendingUp, Package, Search, Edit2, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
