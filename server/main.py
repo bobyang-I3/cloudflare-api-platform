@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from database import init_db
-from routers import auth_router, ai_router, usage_router, admin_router, credit_router, message_router, forum_router, profile_router, group_router, marketplace_router
+from routers import auth_router, ai_router, usage_router, admin_router, credit_router, message_router, forum_router, profile_router, group_router, marketplace_router, resource_pool_router
 from rate_limit import limiter, rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
@@ -39,6 +39,7 @@ app.include_router(forum_router.router)
 app.include_router(profile_router.router)
 app.include_router(group_router.router)
 app.include_router(marketplace_router.router, prefix=settings.api_v1_prefix)
+app.include_router(resource_pool_router.router, prefix=settings.api_v1_prefix)
 app.include_router(admin_router.router)
 
 
