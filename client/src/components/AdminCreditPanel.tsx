@@ -318,9 +318,6 @@ export default function AdminCreditPanel() {
               disabled={!selectedUser}
             />
             {amount && (
-              <div style={{ marginTop: '8px', fontSize: '12px', color: '#6b7280' }}>
-                ≈ ${(parseFloat(amount) * 0.01).toFixed(4)} USD
-              </div>
             )}
           </div>
 

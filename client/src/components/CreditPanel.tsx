@@ -132,9 +132,6 @@ export default function CreditPanel({ token }: CreditPanelProps) {
                     {balance.balance.toFixed(2)}
                     <span style={{ fontSize: isMobile ? '16px' : '24px', marginLeft: '8px', opacity: 0.9 }}>credits</span>
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: isMobile ? '12px' : '14px', marginTop: '8px' }}>
-                    ≈ ${(balance.balance * 0.01).toFixed(4)} USD
-                  </div>
                 </div>
               </div>
               
@@ -261,9 +258,9 @@ export default function CreditPanel({ token }: CreditPanelProps) {
               }}>
                 <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: isMobile ? '12px' : '16px' }}>💡 Quick Info</h3>
                 <ul style={{ fontSize: isMobile ? '12px' : '14px', color: '#1e40af', lineHeight: '1.8', listStyle: 'none', padding: 0 }}>
-                  <li style={{ marginBottom: '8px' }}>• 1 Credit = $0.01 USD</li>
-                  <li style={{ marginBottom: '8px' }}>• Credits are used for AI model requests</li>
-                  <li style={{ marginBottom: '8px' }}>• You can transfer credits to other users</li>
+                  <li style={{ marginBottom: '8px' }}>• Credits are the platform's currency</li>
+                  <li style={{ marginBottom: '8px' }}>• Use Credits for all AI model requests</li>
+                  <li style={{ marginBottom: '8px' }}>• Transfer Credits to other users anytime</li>
                   <li>• Different models have different pricing tiers</li>
                 </ul>
               </div>
@@ -336,11 +333,6 @@ export default function CreditPanel({ token }: CreditPanelProps) {
                   onFocus={(e) => e.target.style.borderColor = '#667eea'}
                   onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                 />
-                {transferAmount && (
-                  <div style={{ marginTop: '8px', fontSize: '14px', color: '#6b7280' }}>
-                    ≈ ${(parseFloat(transferAmount) * 0.01).toFixed(4)} USD
-                  </div>
-                )}
               </div>
               
               <div style={{ marginBottom: '24px' }}>
@@ -453,7 +445,7 @@ export default function CreditPanel({ token }: CreditPanelProps) {
           {activeTab === 'pricing' && (
             <div>
               <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>Model Pricing</h2>
-              <p style={{ color: '#6b7280', marginBottom: '24px' }}>1 Credit = $0.01 USD</p>
+              <p style={{ color: '#6b7280', marginBottom: '24px' }}>Credit-based pricing for all models</p>
               
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
