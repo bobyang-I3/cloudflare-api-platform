@@ -16,6 +16,7 @@ from models_resource_pool import (
 )
 from auth import get_current_user_from_token
 from credit_service import CreditService
+from api_key_validator import APIKeyValidator, ValidationResult
 
 
 router = APIRouter(prefix="/pool", tags=["Resource Pool"])
@@ -25,10 +26,12 @@ router = APIRouter(prefix="/pool", tags=["Resource Pool"])
 
 class DepositRequest(BaseModel):
     """用户存入API资源请求"""
-    provider: str = Field(..., description="Provider name (openai, anthropic, cloudflare)")
+    model_id: str = Field(..., description="Model ID (e.g., gpt-3.5-turbo)")
+    model_name: str = Field(..., description="Model name for display")
+    provider: str = Field(..., description="Provider name (OpenAI, Anthropic, Cloudflare)")
     api_key: str = Field(..., description="API Key to deposit")
-    api_endpoint: Optional[str] = None
-    notes: Optional[str] = None
+    quota_credits: float = Field(..., description="Claimed quota value in Credits")
+    base_url: Optional[str] = Field(None, description="Optional custom API endpoint")
 
 
 class DepositResponse(BaseModel):
@@ -141,38 +144,53 @@ async def deposit_resource(
     db: Session = Depends(get_db)
 ):
     """
-    用户存入API资源到资源池
+    用户存入API资源到资源池（带验证）
     
     流程：
-    1. 验证API Key真实性
+    1. **验证API Key真实性** - 实际调用API测试
     2. 估算资源价值（Credits）
-    3. 扣除手续费（10%）
-    4. 给用户增加Credits
-    5. 将API Key加密存储到资源池
+    3. **初始只给 10% Credits**（防欺诈）
+    4. 扣除手续费（10%）
+    5. 给用户增加Credits
+    6. 将API Key加密存储到资源池
+    7. 剩余 90% 在资源成功使用后逐步释放
     """
     
-    # TODO: Implement API key validation
-    # For now, we'll use a simple estimation
+    # ===== STEP 1: Validate API Key =====
+    print(f"🔐 Validating API key for {data.provider}...")
+    validation_result, estimated_quota, error_msg = await APIKeyValidator.validate_key(
+        provider=data.provider,
+        api_key=data.api_key,
+        model_id=data.model_id,
+        base_url=data.base_url
+    )
     
-    # Estimate value based on provider (simplified version)
-    # In production, this should test the API and check actual quota
-    estimated_credits = 0.0
+    # Check validation result
+    if validation_result != ValidationResult.VALID:
+        raise HTTPException(
+            status_code=400,
+            detail=f"API key validation failed: {validation_result.value}. {error_msg or ''}"
+        )
     
-    if data.provider.lower() == "openai":
-        # Assume $100 quota → can support ~3,333 requests at 5 Credits/request
-        # Total value: 16,665 Credits
-        estimated_credits = 10000.0
-    elif data.provider.lower() == "anthropic":
-        estimated_credits = 8000.0
-    elif data.provider.lower() == "cloudflare":
-        estimated_credits = 5000.0
-    else:
-        raise HTTPException(status_code=400, detail=f"Unsupported provider: {data.provider}")
+    print(f"✅ API key validated successfully")
+    if estimated_quota:
+        print(f"   Estimated quota: {estimated_quota} Credits")
+    
+    # ===== STEP 2: Calculate Initial Credits =====
+    # Use trust-based system: give 10% initially, 90% released later
+    initial_credits, explanation = APIKeyValidator.calculate_initial_credit(
+        claimed_quota=data.quota_credits,
+        validation_result=validation_result,
+        estimated_quota=estimated_quota
+    )
+    
+    # Determine actual quota to use (lower of claimed vs estimated)
+    actual_quota = min(data.quota_credits, estimated_quota) if estimated_quota else data.quota_credits
     
     # Calculate fee (10%)
     fee_rate = 0.10
-    fee_amount = estimated_credits * fee_rate
-    credits_to_receive = estimated_credits * (1 - fee_rate)
+    fee_amount = actual_quota * fee_rate
+    credits_to_receive = initial_credits  # This already includes the 10% initial + fee calculation
     
     try:
         # Create PoolDeposit record
